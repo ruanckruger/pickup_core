@@ -1,4 +1,6 @@
 ﻿@model List<Match>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> uManager
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -19,15 +21,66 @@
 @if (Model.Count == 0)
 {
     <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
+    <p>List of currently online admins will be displayed here soon</p>
 }
 else
 {
     <div id="matches-container">
         @foreach (var match in Model)
         {
-            //await Component.InvokeAsync("Match/MatchInfo", match);
-            //await Html.PartialAsync("Match/MatchInfo", match);
-            await Html.PartialAsync("../Partials/_MatchInfo", match);
+            <div match-id="@match.id" class="row match text-center match-container">
+                <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    var curUser = uManager.GetUserId(User);
+                    if (match.Players.Where(p => p.Id == Guid.Parse(curUser)).Count() == 0)
+                    {
+                        <button class="join-match btn">Join Match</button>
+                    }
+                    else if (match.Players.Count == 10)
+                    {
+                        <button class="full-game btn">Game is Full</button>
+                    }
+                    else
+                    {
+                        <button class="leave-match btn">Leave Match</button>
+                    }
+                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                    {
+                        <button class="end-match btn">End Match</button>
+                    }
+                }
+                <div class="curPlayers row text-center">
+                    @foreach (var player in match.Players)
+                    {
+                        <div class="player-container col-md-2" id="@player.Id">
+                            <div class="player">
+                                @if (player.avatar != null)
+                                {
+                                    <img class="account-image" src="@Url.Action("PlayerPhotos", "Matches", new { playerId = player.Id })" />
+                                }
+                                else
+                                {
+                                    <img class="account-image" src="@player.avatar" />
+                                }
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                                    {
+                                        <div class='add-roles'>
+                                            <a class='add-role adminRole' player-id="@player.Id">Adminify</a>
+                                            <a class='add-role kick' player-id="@player.Id">Kickify</a>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            @Html.DisplayFor(modelItem => player.steamUsername)
+                            @if (player.Id == match.Admin)
+                            {<div class="player-admin"></div>}
+                        </div>                                
+                    }
+                </div>
+            </div>
         }
     </div>
 }
