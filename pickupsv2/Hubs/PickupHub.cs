@@ -1,0 +1,144 @@
+﻿using pickupsv2.Models;
+using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using pickupsv2.Data;
+using Microsoft.AspNetCore.Identity;
+
+namespace pickupsv2.Hubs
+{
+    [Authorize]
+    public class PickupHub : Hub
+    {
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            Leave();
+            return base.OnDisconnectedAsync(exception);
+        }
+        PickupContext context;
+        UserManager<IdentityUser> uManager;
+        public PickupHub(PickupContext _context, UserManager<IdentityUser> umngr) {
+            context = _context;
+            uManager = umngr;
+        }
+
+        public async Task Join(Guid matchId)
+        {
+            using (var db = context)
+            {
+                var curUserId = uManager.GetUserId(Context.User);
+                Player player = db.Players.FirstOrDefault(p => p.Id == curUserId);
+                if (player.curMatch != null)
+                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, player.curMatch.ToString());
+
+                await Groups.AddToGroupAsync(Context.ConnectionId, matchId.ToString());
+                player.curMatch = matchId;
+                db.SaveChanges();
+
+                var newPlayerCount = db.Players.Where(p => p.curMatch == matchId).Count();
+                await Clients.All.SendAsync("userJoined",matchId, player.Id, newPlayerCount);
+                if (newPlayerCount == 2)
+                {
+                    await GameReady(matchId);
+                }
+            }
+        }
+        public async Task Leave()
+        {
+            using (var db = context)
+            {
+                var curUserId = uManager.GetUserId(Context.User);
+                Player player = db.Players.FirstOrDefault(p => p.Id == curUserId);
+                var playerCurMatch = player.curMatch;
+                player.curMatch = null;
+                db.SaveChanges();
+
+                var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, playerCurMatch.ToString());
+
+                await Clients.All.SendAsync("userLeft",playerCurMatch, player.Id, newPlayerCount);
+            }
+        }
+        public async Task CreateGame(string Map)
+        {
+            using (var db = context)
+            {
+                Match match = new Match();
+
+                match.Map = Map;
+                match.Admin = Guid.Parse(uManager.GetUserId(Context.User));
+                
+                db.Matches.Add(match);
+                db.SaveChanges();
+                await Clients.All.SendAsync("gameCreated",match.id);
+            }
+        }
+        public async Task EndGame(Guid matchId)
+        {
+            using (var db = context)
+            {
+                Match match = new Match
+                {
+                    id = matchId
+                };
+                List<Player> removePlayers = db.Players.Where(p => p.curMatch == matchId).ToList();
+                foreach (var remPlayer in removePlayers)
+                {
+                    remPlayer.curMatch = null;
+                }
+
+                db.SaveChanges();
+                db.Matches.Attach(match);
+                db.Matches.Remove(match);
+                db.SaveChanges();
+                await Clients.All.SendAsync("gameEnded",matchId);
+            }
+        }
+        public async Task GameReady(Guid matchId)
+        {
+            await Clients.Group(matchId.ToString()).SendAsync("acceptGame",matchId);
+            using (var db = context)
+            {
+                var matchAdmin = db.Matches.FirstOrDefault(m => m.id == matchId).Admin;
+                if (Guid.Parse(uManager.GetUserId(Context.User)) == matchAdmin)
+                    await Clients.Client(Context.ConnectionId).SendAsync("adminFinalize",matchId);
+            }
+        }
+        public async Task AcceptMatch()
+        {
+            var curUserId = uManager.GetUserId(Context.User);
+            await Clients.All.SendAsync("acceptStatus",curUserId, true);
+        }
+        public async Task DeclineMatch()
+        {
+            var curUserId = uManager.GetUserId(Context.User);
+            await Clients.All.SendAsync("acceptStatus",curUserId, false);
+        }
+        public async Task FullAccept(Guid matchId)
+        {
+            string[] teamA = new string[5];
+            string[] teamB = new string[5];
+            using (var db = context)
+            {
+                List<Player> players = db.Players.Where(p => p.curMatch == matchId).ToList();
+                Random rand = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    int randomSpot = rand.Next(players.Count);
+                    teamA[i] = players.ElementAt(randomSpot).Id;
+                    players.RemoveAt(randomSpot);
+
+                    randomSpot = rand.Next(players.Count);
+                    teamB[i] = players.ElementAt(randomSpot).Id;
+                    players.RemoveAt(randomSpot);
+                }
+                await Clients.All.SendAsync("Teams",matchId, teamA, teamB);
+            }
+
+        }
+    }
+}
+
