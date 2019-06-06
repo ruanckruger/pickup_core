@@ -4,12 +4,12 @@ $(document).ready(function () {
     var game = new signalR.HubConnectionBuilder().withUrl("/PickupHub").build();
 
     //// #region Recieves
-    //game.client.userJoined = function (matchId, userId, newCount) {
-    //    $.get('/Matches/PlayerDisplay?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
-    //        $("#match-" + matchId).find(".match-player-count").text(newCount);
-    //        $("#match-" + matchId).find(".curPlayers").append(data);
-    //    });
-    //};
+    game.on("userJoined", function (matchId, userId, newCount) {
+        $.get('/Match/PlayerInfo?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
+            $(".match-container[match-id='" + matchId + "']").find(".match-player-count").text(newCount);
+            $(".match-container[match-id='" + matchId + "']").find(".curPlayers").append(data);
+        });
+    });
     //game.client.userLeft = function (matchId, userId, newCount) {
     //    $("#" + userId).remove();
     //    $("#match-" + matchId).find(".match-player-count").text(newCount);
@@ -68,12 +68,12 @@ $(document).ready(function () {
 
     //// #region Sends
     game.start().then(function () {
-    //    $('body').on("click", ".join-match", function () {
-    //        $(".leave-match").addClass("join-match").removeClass("leave-match").text("Join Match");
-    //        game.server.leave();
-    //        game.server.join($(this).attr("match-id"));
-    //        $(this).addClass("leave-match").removeClass("join-match").text("Leave Match");
-    //    });
+        $('body').on("click", ".join-match", function () {
+            
+            $(".leave-match").addClass("join-match").removeClass("leave-match").text("Join Match");
+            game.invoke("Join", $(this).parent(".match-container").attr("match-id"));
+            $(this).addClass("leave-match").removeClass("join-match").text("Leave Match");
+        });
 
     //    $('body').on("click", ".leave-match", function () {
     //        console.log("Leave clicked");

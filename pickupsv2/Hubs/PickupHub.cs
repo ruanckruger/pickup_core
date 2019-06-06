@@ -13,33 +13,37 @@ namespace pickupsv2.Hubs
     [Authorize]
     public class PickupHub : Hub
     {
-        public override Task OnDisconnectedAsync(Exception exception)
-        {
-            Leave();
-            return base.OnDisconnectedAsync(exception);
-        }
-        PickupContext context;
+        readonly PickupContext context;
         UserManager<IdentityUser> uManager;
         public PickupHub(PickupContext _context, UserManager<IdentityUser> umngr) {
             context = _context;
             uManager = umngr;
         }
 
+        public override Task OnDisconnectedAsync(Exception exception)
+        {
+            Leave();
+            return base.OnDisconnectedAsync(exception);
+        }
+
         public async Task Join(Guid matchId)
         {
             using (var db = context)
             {
-                var curUserId = uManager.GetUserId(Context.User);
-                Player player = db.Players.FirstOrDefault(p => p.Id == curUserId);
-                if (player.curMatch != null)
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, player.curMatch.ToString());
+                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                //var player = db.Players.Where(p => p.Id == curUserId).FirstOrDefault();
+                var plrTbl = db.Players;
+                var player = db.Players.Where(p => p.Id == curUserId).FirstOrDefault();
+                //Find(p => p.Id == curUserId);
+                //if (player. != null)
+                //    await Leave();
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, matchId.ToString());
-                player.curMatch = matchId;
+                //player.curMatch = matchId;
                 db.SaveChanges();
 
                 var newPlayerCount = db.Players.Where(p => p.curMatch == matchId).Count();
-                await Clients.All.SendAsync("userJoined",matchId, player.Id, newPlayerCount);
+                await Clients.All.SendAsync("UserJoined",matchId, player.Id, newPlayerCount);
                 if (newPlayerCount == 2)
                 {
                     await GameReady(matchId);
@@ -50,7 +54,7 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var curUserId = uManager.GetUserId(Context.User);
+                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
                 Player player = db.Players.FirstOrDefault(p => p.Id == curUserId);
                 var playerCurMatch = player.curMatch;
                 player.curMatch = null;
@@ -59,7 +63,7 @@ namespace pickupsv2.Hubs
                 var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, playerCurMatch.ToString());
 
-                await Clients.All.SendAsync("userLeft",playerCurMatch, player.Id, newPlayerCount);
+                await Clients.All.SendAsync("UserLeft",playerCurMatch, player.Id, newPlayerCount);
             }
         }
         public async Task CreateGame(string Map)
@@ -123,16 +127,16 @@ namespace pickupsv2.Hubs
             string[] teamB = new string[5];
             using (var db = context)
             {
-                List<Player> players = db.Players.Where(p => p.curMatch == matchId).ToList();
+                var players = db.Players.Where(p => p.curMatch == matchId).ToList();
                 Random rand = new Random();
                 for (int i = 0; i < 5; i++)
                 {
                     int randomSpot = rand.Next(players.Count);
-                    teamA[i] = players.ElementAt(randomSpot).Id;
+                    teamA[i] = players.ElementAt(randomSpot).Id.ToString();
                     players.RemoveAt(randomSpot);
 
                     randomSpot = rand.Next(players.Count);
-                    teamB[i] = players.ElementAt(randomSpot).Id;
+                    teamB[i] = players.ElementAt(randomSpot).Id.ToString();
                     players.RemoveAt(randomSpot);
                 }
                 await Clients.All.SendAsync("Teams",matchId, teamA, teamB);

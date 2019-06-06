@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace pickupsv2.Migrations
 {
-    public partial class pickupMigration : Migration
+    public partial class PickupContextMig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,15 +40,7 @@ namespace pickupsv2.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    steamId = table.Column<string>(nullable: true),
-                    steamUsername = table.Column<string>(nullable: true),
-                    name = table.Column<string>(nullable: true),
-                    surname = table.Column<string>(nullable: true),
-                    steaumUrl = table.Column<string>(nullable: true),
-                    avatar = table.Column<string>(nullable: true),
-                    curMatch = table.Column<Guid>(nullable: true)
+                    AccessFailedCount = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -175,12 +167,14 @@ namespace pickupsv2.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SimplePlayer",
+                name: "Players",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     steamId = table.Column<string>(nullable: true),
                     steamUsername = table.Column<string>(nullable: true),
+                    name = table.Column<string>(nullable: true),
+                    surname = table.Column<string>(nullable: true),
                     steaumUrl = table.Column<string>(nullable: true),
                     avatar = table.Column<string>(nullable: true),
                     curMatch = table.Column<Guid>(nullable: true),
@@ -188,9 +182,9 @@ namespace pickupsv2.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SimplePlayer", x => x.Id);
+                    table.PrimaryKey("PK_Players", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_SimplePlayer_Matches_Matchid",
+                        name: "FK_Players_Matches_Matchid",
                         column: x => x.Matchid,
                         principalTable: "Matches",
                         principalColumn: "id",
@@ -237,8 +231,8 @@ namespace pickupsv2.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_SimplePlayer_Matchid",
-                table: "SimplePlayer",
+                name: "IX_Players_Matchid",
+                table: "Players",
                 column: "Matchid");
         }
 
@@ -260,7 +254,7 @@ namespace pickupsv2.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "SimplePlayer");
+                name: "Players");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

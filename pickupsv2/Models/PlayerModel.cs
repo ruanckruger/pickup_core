@@ -1,24 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace pickupsv2.Models
 {
-    public class Player: IdentityUser
+    public class Player
     {
-        public SimplePlayer Simplify()
-        {
-            return new SimplePlayer()
-            {
-                steamId = this.steamId,
-                steamUsername = this.steamUsername,
-                avatar = this.avatar,
-                curMatch = this.curMatch,
-                steaumUrl = this.steaumUrl,
-                Id = Guid.Parse(this.Id)
-                
-            };
-        }
+        [Key]
+        public Guid Id { get; set; }
         public string steamId{ get; set; }
         public string steamUsername{ get; set; }
         public string name{ get; set; }
@@ -27,13 +17,34 @@ namespace pickupsv2.Models
         public string avatar{ get; set; }
         public Guid? curMatch{ get; set; }
     }
-    public class SimplePlayer
+    public class SteamPlayer
     {
-        public Guid Id { get; set; }
-        public string steamId { get; set; }
-        public string steamUsername { get; set; }
-        public string steaumUrl { get; set; }
+        public string steamid { get; set; }
+        public int communityvisibilitystate { get; set; }
+        public int profilestate { get; set; }
+        public string personaname { get; set; }
+        public int lastlogoff { get; set; }
+        public string profileurl { get; set; }
         public string avatar { get; set; }
-        public Guid? curMatch { get; set; }
+        public string avatarmedium { get; set; }
+        public string avatarfull { get; set; }
+        public int personastate { get; set; }
+        public string realname { get; set; }
+        public string primaryclanid { get; set; }
+        public int timecreated { get; set; }
+        public int personastateflags { get; set; }
+        public string loccountrycode { get; set; }
+        public string locstatecode { get; set; }
+        public int loccityid { get; set; }
+    }
+
+    public class Response
+    {
+        public SteamPlayer player { get; set; }
+    }
+
+    public class RootObject
+    {
+        public Response response { get; set; }
     }
 }

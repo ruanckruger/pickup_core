@@ -19,17 +19,17 @@ namespace pickupsv2.Controllers
         {
             return View();
         }
-        //public ActionResult MatchInfo(Guid matchId)
+
         public ActionResult MatchInfo(Match match)
         {
             using (var db = context)
             {
                 //var match = db.Matches.FirstOrDefault(m => m.id == matchId);
 
-                var curPlayers = new List<SimplePlayer>();
+                var curPlayers = new List<Player>();
                 foreach (var player in db.Players.Where(n => n.curMatch == match.id))
                 {
-                    curPlayers.Add(player.Simplify());
+                    curPlayers.Add(player);
                 }
 
                 match.Players = curPlayers;
@@ -42,9 +42,9 @@ namespace pickupsv2.Controllers
             {
                 var match = db.Matches.FirstOrDefault(m => m.id == matchId);
 
-                var player = db.Players.FirstOrDefault(p => Guid.Parse(p.Id) == playerId);
-                var players = new List<SimplePlayer>();
-                players.Add(player.Simplify());
+                var player = db.Players.FirstOrDefault(p => p.Id == playerId);
+                var players = new List<Player>();
+                players.Add(player);
                 var matches = new Match()
                 {
                     id = matchId,
