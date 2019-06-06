@@ -20,11 +20,11 @@ namespace pickupsv2.Controllers
             return View();
         }
 
-        public ActionResult MatchInfo(Match match)
+        public IActionResult MatchInfo(Guid matchId)
         {
             using (var db = context)
             {
-                //var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
 
                 var curPlayers = new List<Player>();
                 foreach (var player in db.Players.Where(n => n.curMatch == match.id))

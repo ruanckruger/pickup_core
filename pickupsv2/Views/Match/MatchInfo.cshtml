@@ -1,0 +1,30 @@
+﻿@model pickupsv2.Models.Match
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> uManager
+@{ var match = Model; }
+<div match-id="@match.id" class="row match text-center">
+    <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
+    @if (User.Identity.IsAuthenticated)
+    {
+        var curUser = uManager.GetUserId(User);
+        if (match.Players.Where(p => p.Id == Guid.Parse(curUser)).Count() == 0)
+        {
+            <button match-id="@match.id" class="join-match btn">Join Match</button>
+        }
+        else if (match.Players.Count == 10)
+        {
+            <button match-id="@match.id" class="full-game btn">Game is Full</button>
+        }
+        else
+        {
+            <button match-id="@match.id" class="leave-match btn">Leave Match</button>
+        }
+        if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+        {
+            <button match-id="@match.id" class="end-match btn">End Match</button>
+        }
+    }
+    <div class="curPlayers row text-center">
+                
+    </div>
+</div>

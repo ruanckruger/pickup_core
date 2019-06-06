@@ -1,6 +1,9 @@
 ﻿@model pickupsv2.Models.Match
-@inject Microsoft.AspNetCore.Identity.UserManager<Player> uManager
-@if (Model.Players.ToArray().Count() > 0) {
+@using Microsoft.AspNetCore.Identity;
+
+@inject Microsoft.AspNetCore.Identity.UserManager<IdentityUser> uManager
+@if (Model.Players.ToArray().Count() > 0)
+{
     var player = Model.Players[0];
     var match = Model;
 
@@ -24,11 +27,11 @@
                     </div>
                 }
             }
-            
+
         </div>
         @Html.DisplayFor(modelItem => player.steamUsername)
         <div class="player-role"></div>
         @if (player.Id == match.Admin)
         {<div class="player-admin"></div>}
     </div>
-    }
+}
