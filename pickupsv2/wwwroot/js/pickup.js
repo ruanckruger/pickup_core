@@ -4,24 +4,25 @@ $(document).ready(function () {
     var game = new signalR.HubConnectionBuilder().withUrl("/PickupHub").build();
 
     //// #region Recieves
-    //game.client.userJoined = function (matchId, userId, newCount) {
-    //    $.get('/Matches/PlayerDisplay?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
-    //        $("#match-" + matchId).find(".match-player-count").text(newCount);
-    //        $("#match-" + matchId).find(".curPlayers").append(data);
-    //    });
-    //};
-    //game.client.userLeft = function (matchId, userId, newCount) {
-    //    $("#" + userId).remove();
-    //    $("#match-" + matchId).find(".match-player-count").text(newCount);
-    //};
-    //game.client.gameCreated = function (matchId) {
-    //    $.get('/Matches/MatchInfo?matchid=' + matchId, function (data, status) {
-    //        $("#matches-container").append(data);
-    //    });
-    //};
-    //game.client.gameEnded = function (matchId) {
-    //    $("#match-" + matchId).remove();
-    //};
+    game.on("UserJoined", function (matchId, userId, newCount) {
+        $.get('/Match/PlayerInfo?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
+            $(".match-container[match-id='" + matchId + "']").find(".curPlayers").append(data);
+        });
+        $(".match-container[match-id='" + matchId + "']").find(".match-player-count").text(newCount);
+        console.log(matchId + " joined " + userId);
+    });
+    game.on("UserLeft", function (matchId, userId, newCount) {
+        $("#" + userId).remove();
+        $(".match-container[match-id='" + matchId + "']").find(".match-player-count").text(newCount);
+    });
+    game.on("GameCreated", function (matchId) {
+        $.get('/Match/MatchInfo?matchId=' + matchId, function (data, status) {
+            $("#matches-container").append(data);
+        });
+    });
+    game.on("GameEnded", function (matchId) {
+        $(".match-container[match-id='" + matchId + "']").remove();
+    });
     //var accepted = false;
     //game.client.acceptGame = function (matchId) {
     //    console.log("Accept Match ", matchId);
@@ -68,43 +69,40 @@ $(document).ready(function () {
 
     //// #region Sends
     game.start().then(function () {
-    //    $('body').on("click", ".join-match", function () {
-    //        $(".leave-match").addClass("join-match").removeClass("leave-match").text("Join Match");
-    //        game.server.leave();
-    //        game.server.join($(this).attr("match-id"));
-    //        $(this).addClass("leave-match").removeClass("join-match").text("Leave Match");
-    //    });
-
-    //    $('body').on("click", ".leave-match", function () {
-    //        console.log("Leave clicked");
-    //        game.server.leave();
-    //        $(this).addClass("join-match").removeClass("leave-match").text("Join Match");
-    //    });
-
-    //    $("#logout-button").click(function () {
-    //        $("#" + $(this).attr("user-id")).remove();
-    //        game.server.leave();
-    //        $('#logoutForm').submit();
-    //    });
-
-    //    $("body").on("click", "#createMatchSubmit", function (e) {
-    //        e.preventDefault();
-    //        game.server.createGame("DankyDankness");
-    //        $(modalId).fadeOut();
-    //    });
-
-    $("body").on("click", "#create-new-match", function (e) {
-        e.preventDefault();
-        console.log("clicked");
-        game.invoke("CreateGame", "Dankaroo").catch(function (err){
-            return console.error(err.toString());
+        $('body').on("click", ".join-match", function () {
+            
+            $(".leave-match").addClass("join-match").removeClass("leave-match").text("Join Match");
+            game.invoke("Join", $(this).parent(".match-container").attr("match-id"));
+            $(this).addClass("leave-match").removeClass("join-match").text("Leave Match");
         });
-        //$(modalId).fadeOut();
-    });
-        //$("body").on("click", ".end-match", function (e) {
-        //    e.preventDefault();
-        //    game.server.endGame($(this).attr("match-id"));
-        //});
+
+        $('body').on("click", ".leave-match", function () {
+            game.invoke("Leave");
+            $(this).addClass("join-match").removeClass("leave-match").text("join match");
+        });
+
+        $("#logout-button").click(function () {
+            game.invoke("Leave");
+            $('#logoutForm').submit();
+        });
+
+        $("body").on("click", "#createMatchSubmit", function (e) {
+            e.preventDefault();
+            game.invoke("CreateGame",$("#map-list").val());
+            $(modalId).fadeOut();
+        });
+
+        $("body").on("click", "#create-new-match", function (e) {
+            e.preventDefault();
+            game.invoke("CreateGame", $("#map-list").val()).catch(function (err){
+                return console.error(err.toString());
+            });
+            //$(modalId).fadeOut();
+        });
+        $("body").on("click", ".end-match", function (e) {
+            e.preventDefault();
+            game.invoke("EndGame", $(this).parent(".match-container").attr("match-id"));
+        });
 
         //$("body").on("click", "#acceptMatch", function (e) {
         //    e.preventDefault();

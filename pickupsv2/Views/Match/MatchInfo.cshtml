@@ -23,12 +23,8 @@
         {
             <button match-id="@match.id" class="end-match btn">End Match</button>
         }
-        @*@Html.ActionLink("Join Match", "Join", new { /* id=item.PrimaryKey */ })*@
     }
     <div class="curPlayers row text-center">
-        @foreach (var player in match.Players)
-        {
-            await Html.RenderPartialAsync("_playerInfo", player);
-        }
+                
     </div>
 </div>

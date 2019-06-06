@@ -8,7 +8,7 @@ namespace pickupsv2.Models
     {
         public Guid id { get; set; }
         public string Map { get; set; }
-        public List<SimplePlayer> Players { get; set; }
+        public List<Player> Players { get; set; }
         public Guid Admin { get; set; }
     }
 }

@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 using pickupsv2.Models;
 using Microsoft.AspNetCore.Mvc;
 using pickupsv2.Data;
+using System.Net.Http;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Identity;
 
 namespace pickupsv2.Controllers
 {
     public class HomeController : Controller
     {
         readonly PickupContext _context;
-        public HomeController(PickupContext context)
+        readonly UserManager<IdentityUser> umngr;
+        public HomeController(PickupContext context, UserManager<IdentityUser> _umngr)
         {
             _context = context;
+            umngr = _umngr;
         }
         public IActionResult Index()
         {
@@ -23,7 +28,7 @@ namespace pickupsv2.Controllers
             {
                 foreach(var match in db.Matches)
                 {
-                    match.Players = new List<SimplePlayer>();
+                    match.Players = new List<Player>();
                     foreach(var player in db.Players)
                     {
                         Random rnd = new Random();
@@ -31,7 +36,7 @@ namespace pickupsv2.Controllers
                         {
                             int team = rnd.Next(1, 100);
                             if (match.Players.Count < 10) {
-                                match.Players.Add(player.Simplify());
+                                match.Players.Add(player);
                             }
                         }
                     }
@@ -41,7 +46,6 @@ namespace pickupsv2.Controllers
             return View(matches);
         }
         
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
