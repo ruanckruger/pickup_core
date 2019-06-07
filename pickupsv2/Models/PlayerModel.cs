@@ -40,7 +40,7 @@ namespace pickupsv2.Models
 
     public class Response
     {
-        public SteamPlayer player { get; set; }
+        public List<SteamPlayer> players { get; set; }
     }
 
     public class RootObject

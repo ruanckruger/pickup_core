@@ -25,26 +25,34 @@ namespace pickupsv2.Controllers
         }
         public IActionResult SaveSteamDetails(string steamids, string key)
         {
-            var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key{0}=&steamids={1}", key, steamids);
-            Response responseData;
+            var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
+            //Response responseData;
             using (var client = new HttpClient())
                 using (var response = client.GetAsync(baseSteamUrl))
                     using (var content = response.Result.Content)
             {
                 string result = content.ReadAsStringAsync().Result;
-                responseData = JsonConvert.DeserializeObject<Response>(result);
+                var responseData = JsonConvert.DeserializeObject<RootObject>(result);
 
-                SteamPlayer pData = responseData.player;
-                var player = new Player()
+                SteamPlayer pData = responseData.response.players[0];
+                var existing = context.Players.FirstOrDefault(p => p.steamId == steamids);
+                if ( existing != null)
                 {
-                    Id = Guid.Parse(umngr.GetUserId(User)),
-                    avatar = pData.avatar,
-                    steamId = pData.steamid,
-                    steaumUrl = pData.profileurl,
-                    steamUsername = pData.personaname,
-                    name = pData.realname
-                };
-                context.Players.Add(player);
+                    existing.steamUsername = pData.personaname;
+                    existing.avatar = pData.avatarfull;
+                } else
+                {
+                    var player = new Player()
+                    {
+                        Id = Guid.Parse(umngr.GetUserId(User)),
+                        avatar = pData.avatarfull,
+                        steamId = pData.steamid,
+                        steaumUrl = pData.profileurl,
+                        steamUsername = pData.personaname,
+                        name = pData.realname
+                    };
+                    context.Players.Add(player);
+                }
                 context.SaveChanges();
             }
             return View();

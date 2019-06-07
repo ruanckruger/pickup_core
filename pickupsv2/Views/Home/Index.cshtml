@@ -11,16 +11,23 @@
     {
         if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
         {
-            <select id="map-list">
-                <option value="Coastal" > Coastal </option>
-                <option value="Liberation" > Liberation </option>
-                <option value="Derailed" > Derailed </option>
-                <option value="Manorhouse V2" > Manorhouse V2 </option>
-                <option value="Savoia"> Savoia </option>
-            </select>
-            <button class="btn btn-success" id="create-new-match">
-                Create New Scrim!
-            </button>
+
+            <div class="visible-panel" id="create-match-container">
+                <h3>You're an admin, how dank! You can do some extra shit</h3>
+                <div class="form-group">
+                    <label for="map-list">Select Map</label>
+                    <select class="form-control" id="map-list">
+                        <option value="Coastal"> Coastal </option>
+                        <option value="Liberation"> Liberation </option>
+                        <option value="Derailed"> Derailed </option>
+                        <option value="Manorhouse V2"> Manorhouse V2 </option>
+                        <option value="Savoia"> Savoia </option>
+                    </select>
+                </div>
+                <button class="btn btn-success" id="create-new-match">
+                    Start Pickup!
+                </button>
+            </div>
         }
     }
 </p>
@@ -35,56 +42,65 @@ else
     <div id="matches-container">
         @foreach (var match in Model)
         {
-            <div match-id="@match.id" class="row match text-center match-container">
-                <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    var curUser = uManager.GetUserId(User);
-                    if (match.Players.Where(p => p.Id == Guid.Parse(curUser)).Count() == 0)
+            <div match-id="@match.id" class="row text-center match-container" style="background-image: url('/img/maps/@(match.Map).png');">
+                <div class="match-header">
+                    <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        <button class="join-match btn">Join Match</button>
+                        var curUser = uManager.GetUserId(User);
+                        if (match.Players.Where(p => p.Id == Guid.Parse(curUser)).Count() == 0)
+                        {
+                            <button class="join-match btn">Join Match</button>
+                        }
+                        else if (match.Players.Count == 10)
+                        {
+                            <button class="full-game btn">Game is Full</button>
+                        }
+                        else
+                        {
+                            <button class="leave-match btn">Leave Match</button>
+                        }
+                        if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                        {
+                            <button class="end-match btn">End Match</button>
+                        }
                     }
-                    else if (match.Players.Count == 10)
-                    {
-                        <button class="full-game btn">Game is Full</button>
-                    }
-                    else
-                    {
-                        <button class="leave-match btn">Leave Match</button>
-                    }
-                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
-                    {
-                        <button class="end-match btn">End Match</button>
-                    }
-                }
-                <div class="curPlayers row text-center">
+                </div>
+                <div class="curPlayers row text-center ">
                     @foreach (var player in match.Players)
                     {
-                        <div class="player-container col-md-2" id="@player.Id">
+                        
+                        <div class="player-container
+                             @if (player.Id == match.Admin)
+                            {@("match-admin")}" 
+                            id="@player.Id">
                             <div class="player">
-                                @if (player.avatar != null)
-                                {
-                                    <img class="account-image" src="@Url.Action("PlayerPhotos", "Matches", new { playerId = player.Id })" />
-                                }
-                                else
-                                {
-                                    <img class="account-image" src="@player.avatar" />
-                                }
-                                @if (User.Identity.IsAuthenticated)
-                                {
-                                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                                <a class="player-link" href="@player.steaumUrl" target="_blank">
+                                    @if (player.avatar != null)
                                     {
-                                        <div class='add-roles'>
-                                            <a class='add-role adminRole' player-id="@player.Id">Adminify</a>
-                                            <a class='add-role kick' player-id="@player.Id">Kickify</a>
-                                        </div>
+                                        <img class="account-image" src="@player.avatar" />
                                     }
-                                }
+                                    else
+                                    {
+                                        <img class="account-image" src="@player.avatar" />
+                                    }
+                                </a>
                             </div>
-                            @Html.DisplayFor(modelItem => player.steamUsername)
-                            @if (player.Id == match.Admin)
-                            {<div class="player-admin"></div>}
-                        </div>                                
+                            <a class="player-link" href="@player.steaumUrl" target="_blank">
+                                <h3 class="username">@Html.DisplayFor(modelItem => player.steamUsername)</h3>
+                            </a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                                {
+                                    <div class='add-roles'>
+                                        <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
+                                        <a class='add-role kick' player-id="@player.Id">Kickify</a>
+                                    </div>
+                                }
+                            }
+                            
+                        </div>
                     }
                 </div>
             </div>
