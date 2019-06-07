@@ -20,11 +20,11 @@ namespace pickupsv2.Hubs
             uManager = umngr;
         }
 
-        public async override Task OnDisconnectedAsync(Exception exception)
-        {
-            await Leave();
-            await base.OnDisconnectedAsync(exception);
-        }
+        //public async override Task OnDisconnectedAsync(Exception exception)
+        //{
+        //    await Leave();
+        //    await base.OnDisconnectedAsync(exception);
+        //}
 
         public async Task Join(Guid matchId)
         {
@@ -63,6 +63,7 @@ namespace pickupsv2.Hubs
             await Clients.All.SendAsync("UserLeft",playerCurMatch, player.Id, newPlayerCount);
             
         }
+        [Authorize(Roles = "Admin")]
         public async Task CreateGame(string Map)
         {
             using (var db = context)
@@ -78,6 +79,7 @@ namespace pickupsv2.Hubs
                 await Clients.All.SendAsync("GameCreated",match.id);
             }
         }
+        //[Authorize(Roles = "Admin")]
         public async Task EndGame(Guid matchId)
         {
             using (var db = context)
@@ -90,6 +92,7 @@ namespace pickupsv2.Hubs
                 foreach (var remPlayer in removePlayers)
                 {
                     remPlayer.curMatch = null;
+                    await db.SaveChangesAsync();
                 }
                 
                 db.Matches.Attach(match);
@@ -100,23 +103,47 @@ namespace pickupsv2.Hubs
         }
         public async Task GameReady(Guid matchId)
         {
-            await Clients.Group(matchId.ToString()).SendAsync("acceptGame",matchId);
+            await Clients.Group(matchId.ToString()).SendAsync("AcceptGame",matchId);
             using (var db = context)
             {
                 var matchAdmin = db.Matches.FirstOrDefault(m => m.id == matchId).Admin;
                 if (Guid.Parse(uManager.GetUserId(Context.User)) == matchAdmin)
-                    await Clients.Client(Context.ConnectionId).SendAsync("adminFinalize",matchId);
+                    await Clients.Client(Context.ConnectionId).SendAsync("AdminFinalize",matchId);
             }
+        }
+        public async Task Adminfy(Guid matchId, Guid userId)
+        {
+            using (var db = context)
+            {
+                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                match.Admin = userId;
+                await db.SaveChangesAsync();
+                await Clients.All.SendAsync("NewAdmin", matchId, userId);
+            }
+        }
+        public async Task Kick(Guid matchId, Guid userId)
+        {
+            var db = context;
+            Player player = db.Players.FirstOrDefault(p => p.Id == userId);
+            var playerCurMatch = player.curMatch;
+            player.curMatch = null;
+            await db.SaveChangesAsync();
+
+            var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, playerCurMatch.ToString());
+
+            await Clients.All.SendAsync("UserLeft", playerCurMatch, player.Id, newPlayerCount);
+
         }
         public async Task AcceptMatch()
         {
             var curUserId = uManager.GetUserId(Context.User);
-            await Clients.All.SendAsync("acceptStatus",curUserId, true);
+            await Clients.All.SendAsync("AcceptStatus",curUserId, true);
         }
         public async Task DeclineMatch()
         {
             var curUserId = uManager.GetUserId(Context.User);
-            await Clients.All.SendAsync("acceptStatus",curUserId, false);
+            await Clients.All.SendAsync("AcceptStatus",curUserId, false);
         }
         public async Task FullAccept(Guid matchId)
         {

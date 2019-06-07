@@ -60,13 +60,13 @@ namespace pickupsv2
             services
                 .AddAuthentication()
                 .AddSteam();
-                //.AddSteam( //TODO, implement this once the site is live
-                //    options => 
-                //        {
-                //            options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
-                //            options.UserInformationEndpoint = "https://requestbin.fullcontact.com/wywiz9wy";
-                //        }
-                //);
+            //.AddSteam( //TODO, implement this once the site is live
+            //    options =>
+            //        {
+            //            options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
+            //            options.UserInformationEndpoint = "https://requestbin.fullcontact.com/wywiz9wy";
+            //        }
+            //);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

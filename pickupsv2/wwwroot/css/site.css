@@ -54,3 +54,110 @@ body {
   height: 60px;
   line-height: 60px; /* Vertically center the text there */
 }
+
+/* CUSTOM CSS*/
+body{
+    background-image: url("/img/bg.jpg");
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+main{
+    background-color: rgba(255,255,255,0.6);
+    padding: 14px;
+}
+
+.match-container{
+    background-color: rgba(0,0,0,0.3);
+    margin: 7px 0;
+    min-height: 210px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+
+
+.match-header{
+    width: 100%;
+    background-color: rgba(0,0,0,0.3);
+    padding: 7px 0px;
+    color: white;
+}
+
+.match-header h3 {
+    grid-area: title;
+}
+.join-match{
+    background-color:rgba(100,139,220,0.9);
+}
+.leave-match{
+    background-color:rgba(240,139,150,0.8);
+}
+.end-match{
+    background-color:rgba(0,0,0,0.6);
+    color: white;
+}
+
+
+.player-container{
+    /*background-color: rgba(255,255,255,0.42);*/
+    position: relative;
+    height: 280px;
+    display: grid;
+    max-width: 80%;
+    width: 245px;
+    margin: 7px 0px 7px 21px;
+    filter: drop-shadow(0px 0px 10px white);
+}
+.player-container.match-admin {
+    filter: drop-shadow(0px 0px 10px rgba(100,139,220,0.9));
+}
+.match-admin h3{
+    color: white;
+}
+.player{
+    border-radius: 50%;
+    border: solid 2px black;
+    position: absolute;
+    top: 7px;
+    width: 90%;
+    left:5%;
+    overflow: hidden;
+}
+.username{
+    position: absolute;
+    bottom: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.add-roles {
+    position: absolute;
+    bottom: 7px;
+    width: 100%;
+    left:0;
+    bottom: 0px;
+    height: 28px;
+}
+.player-link{
+    text-decoration: none;
+    text-decoration-color: unset;
+    color: white;
+}
+.add-role{
+    width: 50%;
+    position: absolute;
+    display: block;
+    height: 100%;
+    display: grid;
+    place-content: center;
+    cursor: pointer;
+}
+.adminfy{
+    left: 0;
+    background-color: lightgreen;
+}
+.kick{
+    right: 0;
+    background-color: indianred;
+}
