@@ -21,9 +21,12 @@ namespace pickupsv2
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        private readonly IHostingEnvironment _env;
+        public Startup(IConfiguration configuration, IHostingEnvironment __env)
         {
             Configuration = configuration;
+            _env = __env;
         }
 
         public IConfiguration Configuration { get; }
@@ -51,22 +54,26 @@ namespace pickupsv2
             services.AddTransient<PickupContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSignalR();
-            //services.AddAuthentication(sharedOptions =>
-            //{
-            //    sharedOptions.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    sharedOptions.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            //    // sharedOptions.DefaultChallengeScheme = OpenIdConnectDefaults.AuthenticationScheme;
-            //})
-            services
-                .AddAuthentication()
-                .AddSteam();
-            //.AddSteam( //TODO, implement this once the site is live
-            //    options =>
-            //        {
-            //            options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
-            //            options.UserInformationEndpoint = "https://requestbin.fullcontact.com/wywiz9wy";
-            //        }
-            //);
+
+            if (_env.IsDevelopment())
+            {
+                services
+                    .AddAuthentication()
+                    .AddSteam();
+            }
+            else
+            {
+
+                services
+                    .AddAuthentication()
+                    .AddSteam( //TODO, implement this once the site is live
+                        options =>
+                            {
+                                options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
+                                options.UserInformationEndpoint = "https://zapickups.co.za/Steam/SaveSteamDetails";
+                            }
+                    );
+            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -54,5 +54,9 @@ namespace pickupsv2.Controllers
                 return PartialView(matches);
             }
         }
+        public IActionResult MatchReady()
+        {
+            return PartialView();
+        }
     }
 }

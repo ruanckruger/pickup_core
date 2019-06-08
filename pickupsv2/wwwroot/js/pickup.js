@@ -2,7 +2,7 @@
 // #region SignalR
 $(document).ready(function () { 
     var game = new signalR.HubConnectionBuilder().withUrl("/PickupHub").build();
-
+    var modalId = "#modal-overlay";
     //// #region Recieves
     game.on("UserJoined", function (matchId, userId, newCount) {
         $.get('/Match/PlayerInfo?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
@@ -28,28 +28,30 @@ $(document).ready(function () {
         $(".match-container[match-id='" + matchId + "']").remove();
     });
     var accepted = false;
+    var gameReadyTimer;
     game.on("AcceptGame", function (matchId) {
         console.log("Accept Match ", matchId);
-
-        $.get("/Matches/AcceptMatch", function (data) {
+        $.get("/Match/MatchReady", function (data) {
             $("body").prepend(data);
-            $("#acceptMatch").attr("match-id", matchId);
-            $("#declineMatch").attr("match-id", matchId);
-            $("#match-" + matchId).find(".join-match").remove();
-            $("#match-" + matchId).find(".player").addClass("waiting-accept");
+            $("#accept-match").attr("match-id", matchId);
+            $("#decline-match").attr("match-id", matchId);
+            $(".match-container[match-id='" + matchId + "']").find(".player-container").addClass("waiting-accept");
+
+            $(modalId).fadeIn();
             gameReadyTimer = setTimeout(function () {
                 if (accepted == false) {
-                    game.server.leave();
+                    game.invoke("Leave");
                 }
                 $(modalId).fadeOut();
+                $(modalId).remove();
+
             }, 20000)
         });
-
     });
 
     game.on("AcceptStatus", function (uId, hasAccepted) {
         console.log(uId + " accepted or declined");
-        if (hasAccepted == true) {
+        if (hasAccepted) {
             $("#" + uId).addClass("accepted-match");
         } else {
             $("#" + uId).addClass("declined-match");
@@ -57,9 +59,17 @@ $(document).ready(function () {
         $("#" + uId).find(".waiting-accept").removeClass("waiting-accept");
     });
     game.on("AdminFinalize", function (mId) {
-        setTimeout(function () {
-            if ($("#match-" + mId).find(".accepted-match").length == 10) {
-                game.server.fullAccept(mId);
+        console.log("Yo, admin guy, you got dis");
+        setTimeout(function () {$(".match-container[match-id='" + mId + "']")
+            if ($(".match-container[match-id='" + mId + "']").find(".accepted-match").length == 10) {
+                game.invoke("FullAccept", mId);
+            } else {
+                $.each($(".match-container[match-id='" + mId + "']").find(".declined-match"), function () {
+                    game.invoke("Kick", mId, $(this).attr("id"));
+                });
+                $.each($(".match-container[match-id='" + mId + "']").find(".waiting-accept"), function () {
+                    game.invoke("Kick", mId, $(this).attr("id"));
+                });
             }
         }, 22000)
     });
@@ -109,15 +119,17 @@ $(document).ready(function () {
             e.preventDefault();
             game.invoke("Kick", $(this).closest(".match-container").attr("match-id"), $(this).attr("player-id"));
         });
-        $("body").on("click", "#acceptMatch", function (e) {
+        $("body").on("click", "#accept-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();
+            $(modalId).remove();
             game.invoke("AcceptMatch");
             accepted = true;
         });
-        $("body").on("click", "#declineMatch", function (e) {
+        $("body").on("click", "#decline-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();
+            $(modalId).remove();
             game.invoke("DeclineMatch");
         });
     
