@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using pickupsv2.Hubs;
 using pickupsv2.Models;
 using AspNet.Security.OpenId.Steam;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace pickupsv2
 {
@@ -89,6 +90,10 @@ namespace pickupsv2
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.UseForwardedHeaders(new ForwardedHeadersOptions
+                {
+                    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                });
             }
 
             app.UseHttpsRedirection();
