@@ -245,16 +245,112 @@ main{
     max-height: 490px;
     width: 80%;
     max-width: 280px;
-    background-color: white;
-    border-top-left-radius: 14px;
+    transition: transform 0.4s ease;
+    z-index: 7;
+}
+#chat-container.open{
+    transform: translateX(0%);
 }
 
 #chat-toggle{
     position: absolute;
-    right: 100%;
-    bottom: 100%;
-    width: 35px;
-    height: 35px;
-    background-color: lightblue;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    right: 98%;
+    top: 42px;
+    width: 42px;
+    height: 42px;
+    background-color: darkred;
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+}
+#chat-toggle::before{
+    content: '';
+    position: absolute;
+    width: 21px;
+    height: 14px;
+    background-color: white;
+    top: 13px;
+    left: 50%;
+    border-radius: 3px;
+    transform: translateX(-50%);
+}
+#chat-toggle::after{
+    content: '';
+    position: absolute;
+    left: 35%;
+    bottom: 10px;
+    width: 5px;
+    border-style: solid;
+    border-width: 7px 7px 0 0;
+    border-color: white transparent transparent transparent;
+}
+#chat-tab{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 42px;
+}
+#chat-tab div{
+    position: absolute;
+    top: 2%;
+    height: 98%;
+    width: 48%;
+    display: grid;
+    place-content: center;
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom: none !important;
+    background-color: white;
+    filter: saturate(0);
+    cursor: pointer;
+}
+#match-chat{
+    border: solid 1px cyan;
+    right: 2%;
+    background-color: forestgreen;
+}
+#global-chat{
+    border: solid 1px green;
+    left: 2%;
+    background-color: cyan;
+}
+#chat-tab .current-chat-tab{
+    filter: saturate(100);
+}
 
+#chat-window{
+    background-color: white;
+    position: absolute;
+    top: 42px;
+    left: 2%;
+    bottom: 42px;
+    width:96%;
+}
+#chat-input{
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    height: 40px;
+    width:100%;
+}
+#chat-input input{
+    position: absolute;
+    left: 2%;
+    height: 35px;
+    width: 65%;
+    border: none;
+    border-bottom: solid 1px blue;
+    background-color: rgba(255,255,255,0.9);
+}
+#chat-input button{
+    position: absolute;
+    right: 2%;
+    height: 35px;
+    width: 28%;
+    background-color: aquamarine;
+    border: none;
+    border-radius: 3px;
 }

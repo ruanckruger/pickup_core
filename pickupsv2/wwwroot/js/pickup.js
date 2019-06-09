@@ -3,6 +3,47 @@
 $(document).ready(function () { 
     var game = new signalR.HubConnectionBuilder().withUrl("/PickupHub").build();
     var modalId = "#modal-overlay";
+
+    // Chat Code
+    var chatId = "#chat-container";
+    $("#chat-toggle").click(function () {
+        if ($(chatId).hasClass("open"))
+            $(chatId).removeClass("open");
+        else
+            $(chatId).addClass("open");
+    });
+    var globalMessages = "";
+    var matchMessages = "";
+    game.on("RecieveGlobalMessage", function (userName, message) {
+        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+                            `+message+`
+                        </p>`;
+            globalMessages += message;
+        if ($("#global-chat").hasClass("current-chat-tab"))
+            $("#chat-window").html(globalMessages);
+
+    });
+    game.on("RecieveMatchMessage", function (userName, message) {
+        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+                            `+ message + `
+                        </p>`;
+        matchMessages += message;
+        if ($("#match-chat").hasClass("current-chat-tab"))
+            $("#chat-window").html(matchMessages);
+    });
+    $("#global-chat").click(function () {
+        $("#match-chat").removeClass("current-chat-tab");
+        $(this).addClass("current-chat-tab")
+        $("#chat-window").html(globalMessages);
+    });
+    $("#match-chat").click(function () {
+        $("#global-chat").removeClass("current-chat-tab");
+        $(this).addClass("current-chat-tab")
+        $("#chat-window").html(matchMessages);
+    });
+
+
+
     //// #region Recieves
     game.on("UserJoined", function (matchId, userId, newCount) {
         $.get('/Match/PlayerInfo?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
@@ -29,22 +70,24 @@ $(document).ready(function () {
     });
     var accepted = false;
     var gameReadyTimer;
-    game.on("AcceptGame", function (matchId) {
+    game.on("AcceptGame", function (matchId, curUserId) {
+        accepted = false;
         console.log("Accept Match ", matchId);
-        $.get("/Match/MatchReady", function (data) {
+        $.get("/Match/MatchReady?matchId=" + matchId, function (data) {
             $("body").prepend(data);
             $("#accept-match").attr("match-id", matchId);
             $("#decline-match").attr("match-id", matchId);
             $(".match-container[match-id='" + matchId + "']").find(".player-container").addClass("waiting-accept");
 
             $(modalId).fadeIn();
+            var readyClip = new Audio('../audio/ready.mp3');
+            readyClip.play();
             gameReadyTimer = setTimeout(function () {
                 if (accepted == false) {
                     game.invoke("Leave");
                 }
                 $(modalId).fadeOut();
                 $(modalId).remove();
-
             }, 20000)
         });
     });
@@ -96,16 +139,8 @@ $(document).ready(function () {
 
         $("#logout-button").click(function () {
             game.invoke("Leave");
-            $('#logoutForm').submit();
         });
-        
-        $("body").on("click", "#create-new-match", function (e) {
-            e.preventDefault();
-            game.invoke("CreateGame", $("#map-list").val()).catch(function (err){
-                return console.error(err.toString());
-            });
-            //$(modalId).fadeOut();
-        });
+
         $("body").on("click", ".end-match", function (e) {
             e.preventDefault();
             console.log("clicked", $(this).closest(".match-container").attr("match-id"));
@@ -123,16 +158,25 @@ $(document).ready(function () {
             e.preventDefault();
             $(modalId).fadeOut();
             $(modalId).remove();
-            game.invoke("AcceptMatch");
+            game.invoke("AcceptMatch", $(this).closest(modalId).attr("player-id"), true);
             accepted = true;
         });
         $("body").on("click", "#decline-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();
             $(modalId).remove();
-            game.invoke("DeclineMatch");
+            game.invoke("AcceptMatch", $(this).closest("#accept-modal").attr("player-id"), false);
         });
-    
+
+        // Chat Code
+        $('#send-message').click(function () {
+            var message = $("#chat-message").val();
+            console.log("Sending message", );
+            if ($("#global-chat").hasClass("current-chat-tab"))
+                game.invoke("SendGlobalMessage", message);
+            else if ($("#match-chat").hasClass("current-chat-tab"))
+                game.invoke("SendMatchMessage", message);
+        });
     });
 });
     //#endregion

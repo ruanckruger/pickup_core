@@ -54,9 +54,15 @@ namespace pickupsv2.Controllers
                 return PartialView(matches);
             }
         }
-        public IActionResult MatchReady()
+        public IActionResult MatchReady(Guid matchId)
         {
-            return PartialView();
+            using (var db = context)
+            {
+                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                var players = db.Players.Where(p => p.curMatch == matchId);
+                match.Players = players.ToList();
+                return PartialView(match);
+            }
         }
     }
 }

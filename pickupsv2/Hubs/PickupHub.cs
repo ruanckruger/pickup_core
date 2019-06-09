@@ -135,20 +135,14 @@ namespace pickupsv2.Hubs
             await Clients.All.SendAsync("UserLeft", playerCurMatch, player.Id, newPlayerCount);
 
         }
-        public async Task AcceptMatch()
+        public async Task AcceptMatch(Guid userId, bool accepted)
         {
-            var curUserId = uManager.GetUserId(Context.User);
-            await Clients.All.SendAsync("AcceptStatus",curUserId, true);
-        }
-        public async Task DeclineMatch()
-        {
-            var curUserId = uManager.GetUserId(Context.User);
-            await Clients.All.SendAsync("AcceptStatus",curUserId, false);
+            await Clients.All.SendAsync("AcceptStatus",userId, accepted);
         }
         public async Task FullAccept(Guid matchId)
         {
-            string[] teamA = new string[5];
-            string[] teamB = new string[5];
+            Guid[] teamA = new Guid[5];
+            Guid[] teamB = new Guid[5];
             using (var db = context)
             {
                 var players = db.Players.Where(p => p.curMatch == matchId).ToList();
@@ -156,16 +150,38 @@ namespace pickupsv2.Hubs
                 for (int i = 0; i < 5; i++)
                 {
                     int randomSpot = rand.Next(players.Count);
-                    teamA[i] = players.ElementAt(randomSpot).Id.ToString();
+                    teamA[i] = players.ElementAt(randomSpot).Id;
                     players.RemoveAt(randomSpot);
 
                     randomSpot = rand.Next(players.Count);
-                    teamB[i] = players.ElementAt(randomSpot).Id.ToString();
+                    teamB[i] = players.ElementAt(randomSpot).Id;
                     players.RemoveAt(randomSpot);
                 }
                 await Clients.All.SendAsync("Teams",matchId, teamA, teamB);
             }
 
+        }
+
+        public async Task SendGlobalMessage(string msg)
+        {
+            using (var db = context)
+            {
+                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
+
+                await Clients.All.SendAsync("RecieveGlobalMessage", player.steamUsername,msg);
+            }
+        }
+
+        public async Task SendMatchMessage(string msg)
+        {
+            using (var db = context)
+            {
+                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
+                if(player.curMatch != null)
+                    await Clients.Group(player.curMatch.ToString()).SendAsync("RecieveMatchMessage", player.steamUsername, msg);
+            }
         }
     }
 }
