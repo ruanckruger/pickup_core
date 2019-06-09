@@ -76,8 +76,6 @@ main{
     background-repeat: no-repeat;
 }
 
-
-
 .match-header{
     width: 100%;
     background-color: rgba(0,0,0,0.3);
@@ -95,27 +93,103 @@ main{
     background-color:rgba(240,139,150,0.8);
 }
 .end-match{
-    background-color:rgba(0,0,0,0.6);
     color: white;
+    background-color:rgba(0,0,0,0.49);
 }
 
+#modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color:rgba(0,0,0,0.49);
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    display: none;
+}
+#accept-modal {
+    z-index: 11;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 210px;
+    max-width: 420px;
+    display: grid;
+    background-color: rgba(255,255,255,0.9);
+    box-shadow: 14px 14px 10px 10px black;
+    border-radius: 25px;
+}
+#modal-header{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 50%;
+    width: 100%;
+    display: grid;
+    place-content: center;
+}
+#modal-body{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 50%;
+    width: 100%;
+}
+#accept-modal button{
+    position: absolute;
+    bottom: 21px;
+    width: 40%;
+    height: 49px;
+    border: none;
+    border-radius: 7px;
+    transition: background-color 0.3s ease;
+}
+
+#accept-match{ 
+    left: 25%;
+    transform: translateX(-50%);
+    background-color: greenyellow;
+}
+#accept-match:hover {
+    background-color: lawngreen;
+}
+#decline-match{
+    right: 25%;
+    transform: translateX(50%);
+    background-color: transparent;
+}#decline-match:hover {
+    background-color: gray;
+} 
 
 .player-container{
     /*background-color: rgba(255,255,255,0.42);*/
     position: relative;
     height: 280px;
     display: grid;
-    max-width: 80%;
-    width: 245px;
+    /*max-width: 80%;*/
+    width: 210px;
     margin: 7px 0px 7px 21px;
     filter: drop-shadow(0px 0px 10px white);
 }
 .player-container.match-admin {
     filter: drop-shadow(0px 0px 10px rgba(100,139,220,0.9));
 }
+.player-container.waiting-accept {
+    filter: drop-shadow(0px 0px 10px yellow) !important;
+}
+.player-container.accepted-match {
+    filter: drop-shadow(0px 0px 10px green);
+}
+.player-container.declined-match {
+    filter: drop-shadow(0px 0px 10px red);
+}
+
 .match-admin h3{
     color: white;
 }
+
 .player{
     border-radius: 50%;
     border: solid 2px black;
@@ -160,4 +234,123 @@ main{
 .kick{
     right: 0;
     background-color: indianred;
+}
+
+#chat-container{
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    transform: translateX(100%);
+    height: 70%;
+    max-height: 490px;
+    width: 80%;
+    max-width: 280px;
+    transition: transform 0.4s ease;
+    z-index: 7;
+}
+#chat-container.open{
+    transform: translateX(0%);
+}
+
+#chat-toggle{
+    position: absolute;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+    right: 98%;
+    top: 42px;
+    width: 42px;
+    height: 42px;
+    background-color: darkred;
+    cursor: pointer;
+    display: grid;
+    place-content: center;
+}
+#chat-toggle::before{
+    content: '';
+    position: absolute;
+    width: 21px;
+    height: 14px;
+    background-color: white;
+    top: 13px;
+    left: 50%;
+    border-radius: 3px;
+    transform: translateX(-50%);
+}
+#chat-toggle::after{
+    content: '';
+    position: absolute;
+    left: 35%;
+    bottom: 10px;
+    width: 5px;
+    border-style: solid;
+    border-width: 7px 7px 0 0;
+    border-color: white transparent transparent transparent;
+}
+#chat-tab{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width:100%;
+    height: 42px;
+}
+#chat-tab div{
+    position: absolute;
+    top: 2%;
+    height: 98%;
+    width: 48%;
+    display: grid;
+    place-content: center;
+    border-top-right-radius: 7px;
+    border-top-left-radius: 7px;
+    border-bottom: none !important;
+    background-color: white;
+    filter: saturate(0);
+    cursor: pointer;
+}
+#match-chat{
+    border: solid 1px cyan;
+    right: 2%;
+    background-color: forestgreen;
+}
+#global-chat{
+    border: solid 1px green;
+    left: 2%;
+    background-color: cyan;
+}
+#chat-tab .current-chat-tab{
+    filter: saturate(100);
+}
+
+#chat-window{
+    background-color: white;
+    position: absolute;
+    top: 42px;
+    left: 2%;
+    bottom: 42px;
+    width:96%;
+}
+#chat-input{
+    position: absolute;
+    left: 0;
+    bottom: 0px;
+    height: 40px;
+    width:100%;
+}
+#chat-input input{
+    position: absolute;
+    left: 2%;
+    height: 35px;
+    width: 65%;
+    border: none;
+    border-bottom: solid 1px blue;
+    background-color: rgba(255,255,255,0.9);
+}
+#chat-input button{
+    position: absolute;
+    right: 2%;
+    height: 35px;
+    width: 28%;
+    background-color: aquamarine;
+    border: none;
+    border-radius: 3px;
 }
