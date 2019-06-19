@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using pickupsv2.Hubs;
 using pickupsv2.Models;
 using AspNet.Security.OpenId.Steam;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace pickupsv2
 {
@@ -55,25 +56,25 @@ namespace pickupsv2
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSignalR();
 
-            if (_env.IsDevelopment())
-            {
-                services
+//            if (_env.IsDevelopment())
+//            {
+               services
                     .AddAuthentication()
                     .AddSteam();
-            }
-            else
-            {
-
-                services
-                    .AddAuthentication()
-                    .AddSteam( //TODO, implement this once the site is live
-                        options =>
-                            {
-                                options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
-                                options.UserInformationEndpoint = "https://zapickups.co.za/Steam/SaveSteamDetails";
-                            }
-                    );
-            }
+//            }
+//            else
+//            {
+//
+//                services
+//                    .AddAuthentication()
+//                   .AddSteam( //TODO, implement this once the site is live
+//                        options =>
+//                            {
+//                              options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
+//                              options.UserInformationEndpoint = "https://dedicated.zapickups.co.za/Steam/SaveSteamDetails";
+//                          }
+//                  );
+//            }
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +89,10 @@ namespace pickupsv2
             {
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+		app.UseForwardedHeaders(new ForwardedHeadersOptions
+    		{
+	        	ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+	    	});
                 app.UseHsts();
             }
 
