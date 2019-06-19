@@ -23,14 +23,15 @@ namespace pickupsv2.Controllers
             context = _context;
             umngr = _umngr;
         }
+        [HttpPost]
         public IActionResult SaveSteamDetails(string steamids, string key)
         {
             var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
             //Response responseData;
-	 using (var client = new HttpClient())
+	        using (var client = new HttpClient())
                 using (var response = client.GetAsync(baseSteamUrl))
                     using (var content = response.Result.Content)
-            {
+                {
                 string result = content.ReadAsStringAsync().Result;
                 var responseData = JsonConvert.DeserializeObject<RootObject>(result);
 
