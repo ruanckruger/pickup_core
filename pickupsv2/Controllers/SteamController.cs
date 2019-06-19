@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -24,7 +25,8 @@ namespace pickupsv2.Controllers
             umngr = _umngr;
         }
         [HttpPost]
-        public IActionResult SaveSteamDetails(string steamids, string key)
+        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+        public async Task SaveSteamDetails(string steamids, string key)
         {
             var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
             //Response responseData;
@@ -52,11 +54,10 @@ namespace pickupsv2.Controllers
                         steamUsername = pData.personaname,
                         name = pData.realname
                     };
-                    context.Players.Add(player);
+                    await context.Players.AddAsync(player);
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
             }
-            return View();
         }
     }
 }
