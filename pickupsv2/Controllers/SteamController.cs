@@ -24,9 +24,9 @@ namespace pickupsv2.Controllers
             context = _context;
             umngr = _umngr;
         }
-        [HttpPost]
+        [HttpGet]
         [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public async Task SaveSteamDetails(string steamids, string key)
+        public async Task SaveSteamDetails([FromQuery]string key, [FromQuery]string steamids)
         {
             var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
             //Response responseData;
