@@ -3,7 +3,7 @@
 @model Player
 @{var player = Model;}
 <div class="player-container
-    @if (player.Id == Guid.Parse((string)ViewData["matchAdmin"])){@("match-admin")}"
+    @if (player.Id == (Guid)ViewData["matchAdmin"]){@("match-admin")}"
      id="@player.Id">
     <div class="player">
         <a class="player-link" href="@player.steaumUrl" target="_blank">
@@ -15,7 +15,7 @@
     </a>
     @if (User.Identity.IsAuthenticated)
     {
-        if (Guid.Parse(uManager.GetUserId(User)) == Guid.Parse((string)ViewData["matchAdmin"]))
+        if (Guid.Parse(uManager.GetUserId(User)) == (Guid)ViewData["matchAdmin"])
         {
     <div class='add-roles'>
         <a class='add-role adminfy' player-id="@player.Id">Adminify</a>

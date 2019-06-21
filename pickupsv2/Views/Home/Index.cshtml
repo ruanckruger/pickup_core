@@ -173,7 +173,7 @@ else
                     <div class="curPlayers row text-center ">
                         @foreach (var player in match.Players)
                         {
-                            await Html.PartialAsync("_PlayerPartial", player,
+                            await Html.RenderPartialAsync("_PlayerPartial", player,
                                 new ViewDataDictionary(ViewData)
                                 {
                                     { "matchAdmin", match.Admin }
