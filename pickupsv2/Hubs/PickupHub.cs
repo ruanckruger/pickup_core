@@ -42,7 +42,7 @@ namespace pickupsv2.Hubs
 
                 var newPlayerCount = db.Players.Where(p => p.curMatch == matchId).Count();
                 await Clients.All.SendAsync("UserJoined", matchId, player.Id, newPlayerCount);
-                if (newPlayerCount == 2)
+                if (newPlayerCount == 10)
                 {
                     await GameReady(matchId);
                 }
