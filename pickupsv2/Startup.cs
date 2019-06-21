@@ -61,7 +61,7 @@ namespace pickupsv2
                     options =>
                         {
                             options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
-                            options.UserInformationEndpoint = "https://zapickups.dedicated.co.za/Steam/SaveSteamDetails";
+                            options.UserInformationEndpoint = "https://zapickups.dedicated.co.za/api/Steam/SaveSteamDetails";
                             //options.UserInformationEndpoint = "http://requestbin.fullcontact.com/19vp4c61";
                         }
                 );            

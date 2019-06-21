@@ -15,7 +15,11 @@ using pickupsv2.Models;
 namespace pickupsv2.Controllers
 {
     //[Authorize]
-    public class SteamController : Controller
+    [Route("api/[controller]/[action]")]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ApiController]
+    public class SteamController : ControllerBase
     {
         PickupContext context;
         UserManager<IdentityUser> umngr;
@@ -25,9 +29,10 @@ namespace pickupsv2.Controllers
             umngr = _umngr;
         }
         [HttpGet]
-        [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
-        public async Task SaveSteamDetails([FromQuery]string key, [FromQuery]string steamids)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public ActionResult<bool> SaveSteamDetails(string key, string steamids)
         {
+            Console.WriteLine("[Steam]: " + steamids);
             var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
             //Response responseData;
 	        using (var client = new HttpClient())
@@ -53,11 +58,13 @@ namespace pickupsv2.Controllers
                         steaumUrl = pData.profileurl,
                         steamUsername = pData.personaname,
                         name = pData.realname
+                        
                     };
-                    await context.Players.AddAsync(player);
+                    context.Players.Add(player);
                 }
-                await context.SaveChangesAsync();
+                context.SaveChanges();
             }
+            return true;
         }
     }
 }
