@@ -57,14 +57,7 @@ namespace pickupsv2
             services.AddSignalR();
             services
                 .AddAuthentication()
-                .AddSteam( //TODO, implement this once the site is live
-                    options =>
-                        {
-                            options.ApplicationKey = "99219D4659300FAE38AC15F0071C72AF";
-                            options.UserInformationEndpoint = "https://zapickups.dedicated.co.za/api/Steam/SaveSteamDetails";
-                            //options.UserInformationEndpoint = "http://requestbin.fullcontact.com/19vp4c61";
-                        }
-                );            
+                .AddSteam();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
