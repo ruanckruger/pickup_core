@@ -9,8 +9,11 @@ $(document).ready(function () {
     $("#chat-toggle").click(function () {
         if ($(chatId).hasClass("open"))
             $(chatId).removeClass("open");
-        else
+        else {
             $(chatId).addClass("open");
+            $("#chat-toggle").addClass("new-message");
+        }
+        
     });
     var globalMessages = "";
     var matchMessages = "";
@@ -21,7 +24,7 @@ $(document).ready(function () {
             globalMessages += message;
         if ($("#global-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(globalMessages);
-
+        $("#chat-toggle").addClass("new-message");
     });
     game.on("RecieveMatchMessage", function (userName, message) {
         var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
@@ -30,6 +33,7 @@ $(document).ready(function () {
         matchMessages += message;
         if ($("#match-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(matchMessages);
+        $("#chat-toggle").addClass("new-message");
     });
     $("#global-chat").click(function () {
         $("#match-chat").removeClass("current-chat-tab");
@@ -41,8 +45,6 @@ $(document).ready(function () {
         $(this).addClass("current-chat-tab")
         $("#chat-window").html(matchMessages);
     });
-
-
 
     //// #region Recieves
     game.on("UserJoined", function (matchId, userId, newCount) {

@@ -63,7 +63,6 @@ namespace pickupsv2.Hubs
             await Clients.All.SendAsync("UserLeft",playerCurMatch, player.Id, newPlayerCount);
             
         }
-        [Authorize(Roles = "Admin")]
         public async Task CreateGame(string Map)
         {
             using (var db = context)
@@ -146,7 +145,7 @@ namespace pickupsv2.Hubs
             using (var db = context)
             {
                 var players = db.Players.Where(p => p.curMatch == matchId).ToList();
-                Random rand = new Random();
+                Random rand = new Random(matchId.GetHashCode());
                 for (int i = 0; i < 5; i++)
                 {
                     int randomSpot = rand.Next(players.Count);
