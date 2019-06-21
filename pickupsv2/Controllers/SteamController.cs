@@ -15,25 +15,21 @@ using pickupsv2.Models;
 namespace pickupsv2.Controllers
 {
     //[Authorize]
-    [Route("api/[controller]/[action]")]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ApiController]
-    public class SteamController : ControllerBase
+    public class SteamController : Controller
     {
         PickupContext context;
         UserManager<IdentityUser> umngr;
-        public SteamController(PickupContext _context, UserManager<IdentityUser> _umngr)
+        SignInManager<IdentityUser> sgnIn;
+        public SteamController(PickupContext _context, UserManager<IdentityUser> _umngr, SignInManager<IdentityUser> _sgn)
         {
             context = _context;
             umngr = _umngr;
+            sgnIn = _sgn;
         }
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<bool> SaveSteamDetails(string key, string steamids)
+        public ActionResult SaveSteamDetails(string steamids)
         {
             Console.WriteLine("[Steam]: " + steamids);
-            var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", key, steamids);
+            var baseSteamUrl = String.Format("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={0}&steamids={1}", "99219D4659300FAE38AC15F0071C72AF", steamids);
             //Response responseData;
 	        using (var client = new HttpClient())
                 using (var response = client.GetAsync(baseSteamUrl))
@@ -50,9 +46,10 @@ namespace pickupsv2.Controllers
                     existing.avatar = pData.avatarfull;
                 } else
                 {
+                    var curUser = umngr.GetUserId(User);
                     var player = new Player()
                     {
-                        Id = Guid.Parse(umngr.GetUserId(User)),
+                        Id = Guid.Parse(curUser),
                         avatar = pData.avatarfull,
                         steamId = pData.steamid,
                         steaumUrl = pData.profileurl,
@@ -64,7 +61,7 @@ namespace pickupsv2.Controllers
                 }
                 context.SaveChanges();
             }
-            return true;
+            return LocalRedirect("/Home/Index");
         }
     }
 }
