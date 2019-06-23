@@ -137,7 +137,7 @@ namespace pickupsv2.Hubs
             await db.SaveChangesAsync();
 
             var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
-            await Groups.RemoveFromGroupAsync(matchId.ToString(), playerCurMatch.ToString());
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId,matchId.ToString());
 
             await Clients.All.SendAsync("UserLeft", playerCurMatch, player.Id, newPlayerCount);
         }
