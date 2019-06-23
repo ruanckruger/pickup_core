@@ -3,7 +3,7 @@
 @model Match
 @{var match = Model;}
 
-@if (match.Players.Count == 2)
+@if (match.Players.Count == 10)
 {
     await Html.RenderPartialAsync("_FullMatch", match);
 }
