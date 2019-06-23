@@ -1,0 +1,92 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> uManager
+@model Match
+@{var match = Model;}
+
+<div match-id="@match.id" class="text-center match-container" style="background-image: url('/img/maps/@(match.Map).png');">
+    <div class="match-header">
+        <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
+        @if (User.Identity.IsAuthenticated)
+        {
+            var curUser = uManager.GetUserId(User);
+            if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+            {
+                <button class="end-match btn">End Match</button>
+            }
+        }
+        @{
+            Player[] teamA = new Player[1];
+            Player[] teamB = new Player[1];
+            Random rand = new Random(match.id.GetHashCode());
+            for (int i = 0; i < teamA.Length; i++)
+            {
+                int randomSpot = rand.Next(match.Players.Count);
+                teamA[i] = match.Players.ElementAt(randomSpot);
+                match.Players.RemoveAt(randomSpot);
+
+                randomSpot = rand.Next(match.Players.Count);
+                teamB[i] = match.Players.ElementAt(randomSpot);
+                match.Players.RemoveAt(randomSpot);
+            }
+        }
+    </div>
+    <div class="team team-a text-center ">
+        <h3>Team A</h3>
+        @foreach (var player in teamA)
+        {
+            <div class="player-container
+                    @if (player.Id == match.Admin){@("match-admin")}"
+                    id="@player.Id">
+                <div class="player">
+                    <a class="player-link" href="@player.steaumUrl" target="_blank">
+                        <img class="account-image" src="@player.avatar" />
+                    </a>
+                </div>
+                <a class="player-link" href="@player.steaumUrl" target="_blank">
+                    <h3 class="username">@Html.DisplayFor(modelItem => player.steamUsername)</h3>
+                </a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                    {
+                        <div class='add-roles'>
+                            <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
+                            <a class='add-role kick' player-id="@player.Id">Kickify</a>
+                        </div>
+                    }
+                }
+
+            </div>
+        }
+    </div>
+    <div class="team vs">VS</div>
+    <div class="team team-b text-center ">
+        <h3>Team A</h3>
+        @foreach (var player in teamB)
+        {
+            <div class="player-container
+                    @if (player.Id == match.Admin){@("match-admin")}"
+                 id="@player.Id">
+                <div class="player">
+                    <a class="player-link" href="@player.steaumUrl" target="_blank">
+                        <img class="account-image" src="@player.avatar" />
+                    </a>
+                </div>
+                <a class="player-link" href="@player.steaumUrl" target="_blank">
+                    <h3 class="username">@Html.DisplayFor(modelItem => player.steamUsername)</h3>
+                </a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
+                    {
+                        <div class='add-roles'>
+                            <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
+                            <a class='add-role kick' player-id="@player.Id">Kickify</a>
+                        </div>
+                    }
+                }
+
+            </div>
+        }
+    </div>
+</div>

@@ -25,15 +25,13 @@ namespace pickupsv2.Controllers
             using (var db = context)
             {
                 var match = db.Matches.FirstOrDefault(m => m.id == matchId);
-
                 var curPlayers = new List<Player>();
                 foreach (var player in db.Players.Where(n => n.curMatch == match.id))
                 {
                     curPlayers.Add(player);
                 }
-
                 match.Players = curPlayers;
-                return PartialView(match);
+                return PartialView("_MatchPartial",match);
             }
         }
         public IActionResult PlayerInfo(Guid playerId, Guid matchId)
@@ -41,17 +39,9 @@ namespace pickupsv2.Controllers
             using (var db = context)
             {
                 var match = db.Matches.FirstOrDefault(m => m.id == matchId);
-
-                var player = db.Players.FirstOrDefault(p => p.Id == playerId);
-                var players = new List<Player>();
-                players.Add(player);
-                var matches = new Match()
-                {
-                    id = matchId,
-                    Admin = match.Admin,
-                    Players = players
-                };
-                return PartialView(matches);
+                var player = db.Players.FirstOrDefault(p => p.Id == playerId);                
+                ViewData["matchAdmin"] = match.Admin;
+                return PartialView("_PlayerPartial",player);
             }
         }
         public IActionResult MatchReady(Guid matchId)

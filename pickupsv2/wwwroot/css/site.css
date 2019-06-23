@@ -86,6 +86,19 @@ main{
 .match-header h3 {
     grid-area: title;
 }
+.team{
+    width: 100%;
+}
+.team.team-a{
+    background-color: rgba(180, 180, 240, 0.35);
+}
+
+.team.team-b {
+    background-color: rgba(240, 180, 180, 0.35);
+}
+.team.vs{
+    background-color: rgba(255,255,255,0.7);
+}
 .join-match{
     background-color:rgba(100,139,220,0.9);
 }

@@ -4,6 +4,7 @@ $(document).ready(function () {
     var game = new signalR.HubConnectionBuilder().withUrl("/PickupHub").build();
     var modalId = "#modal-overlay";
 
+
     // Chat Code
     var chatId = "#chat-container";
     $("#chat-toggle").click(function () {
@@ -12,8 +13,7 @@ $(document).ready(function () {
         else {
             $(chatId).addClass("open");
             $("#chat-toggle").addClass("new-message");
-        }
-        
+        }        
     });
     var globalMessages = "";
     var matchMessages = "";
@@ -46,7 +46,7 @@ $(document).ready(function () {
         $("#chat-window").html(matchMessages);
     });
 
-    //// #region Recieves
+    // #region Recieves
     game.on("UserJoined", function (matchId, userId, newCount) {
         $.get('/Match/PlayerInfo?playerId=' + userId + '&matchid=' + matchId, function (data, status) {
             $(".match-container[match-id='" + matchId + "']").find(".curPlayers").append(data);
@@ -58,9 +58,10 @@ $(document).ready(function () {
         $("#" + userId).remove();
         $(".match-container[match-id='" + matchId + "']").find(".match-player-count").text(newCount);
     });
-    game.on("NewAdmin", function (matchId, userId) {
-        $(".match-container[match-id='" + matchId + "']").find(".match-admin").removeClass("match-admin");
-        $("#" + userId).addClass("match-admin");
+    game.on("NewAdmin", function (matchId) {
+        $.get("/Match/MatchInfo?matchId=" + matchId, function (data) {
+            $(".match-container[match-id='" + matchId + "']").replaceWith(data);
+        });
     });
     game.on("GameCreated", function (matchId) {
         $.get('/Match/MatchInfo?matchId=' + matchId, function (data, status) {
@@ -72,7 +73,7 @@ $(document).ready(function () {
     });
     var accepted = false;
     var gameReadyTimer;
-    game.on("AcceptGame", function (matchId, curUserId) {
+    game.on("AcceptGame", function (matchId) {
         accepted = false;
         console.log("Accept Match ", matchId);
         $.get("/Match/MatchReady?matchId=" + matchId, function (data) {
@@ -95,13 +96,14 @@ $(document).ready(function () {
     });
 
     game.on("AcceptStatus", function (uId, hasAccepted) {
-        console.log(uId + " accepted or declined");
+        console.log(uId + " accepted? " + hasAccepted);
+
         if (hasAccepted) {
             $("#" + uId).addClass("accepted-match");
         } else {
             $("#" + uId).addClass("declined-match");
         }
-        $("#" + uId).find(".waiting-accept").removeClass("waiting-accept");
+        $("#" + uId).removeClass("waiting-accept");
     });
     game.on("AdminFinalize", function (mId) {
         console.log("Yo, admin guy, you got dis");
@@ -118,16 +120,23 @@ $(document).ready(function () {
             }
         }, 22000)
     });
-    game.on("Teams", function (mId, teamA, teamB) {
-        let players = $("#match-" + mId).find(".player-container");
-        for (let i = 0; i < 5; i++) {
-            console.log(players.find("#" + teamA[i]), players.find("#" + teamB[i]));
-        }
+    game.on("Teams", function (mId) {
+        $.get("/Match/MatchReady?matchId=" + matchId, function (data) {
+            $(".match-container[match-id='" + mId + "']").html(data);
+        });
     });
-    //// #endregion
+    // #endregion
 
-    //// #region Sends
+    // #region Sends
     game.start().then(function () {
+
+        // Reconnecting
+        game.invoke("Reconnect");
+
+        $('body').on("click", "#create-new-match", function () {
+            game.invoke("CreateGame",$("#map-list").val());
+        });
+
         $('body').on("click", ".join-match", function () {            
             $(".leave-match").addClass("join-match").removeClass("leave-match").text("Join Match");
             game.invoke("Join", $(this).closest(".match-container").attr("match-id"));
@@ -160,14 +169,14 @@ $(document).ready(function () {
             e.preventDefault();
             $(modalId).fadeOut();
             $(modalId).remove();
-            game.invoke("AcceptMatch", $(this).closest(modalId).attr("player-id"), true);
+            game.invoke("AcceptMatch", true);
             accepted = true;
         });
         $("body").on("click", "#decline-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();
             $(modalId).remove();
-            game.invoke("AcceptMatch", $(this).closest("#accept-modal").attr("player-id"), false);
+            game.invoke("AcceptMatch", false);
         });
 
         // Chat Code
