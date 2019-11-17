@@ -1,9 +1,7 @@
 @using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav">
-    @*@if (SignInManager.IsSignedIn(User))*@
     @if (User.Identity.IsAuthenticated)
     {
         <li class="nav-item">
@@ -14,11 +12,26 @@
                 <button id="logout-button" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
             </form>
         </li>
+        
+        <div id="chat-container">
+            <div id="chat-tab">
+                <div class="current-chat-tab" id="global-chat">Global</div>
+                <div id="match-chat">Match</div>
+            </div>
+            <div id="chat-window"></div>
+            <div id="chat-input">
+                <input id="chat-message" type="text" placeholder="Your message" />
+                <button id="send-message">send</button>
+            </div>
+            <div id="chat-toggle">
+            </div>
+        </div>
+        
     }
     else
-    {        
+    {
         <li class="nav-item">
             <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
         </li>
     }
-    </ul>
+</ul>

@@ -23,16 +23,24 @@ namespace pickupsv2.Controllers
         }
         public IActionResult Index()
         {
-            var matches = new List<Match>();
+            var home = new Home()
+            {
+                Matches = new List<Match>(),
+                Games = new List<Game>()
+            };
             using (var db = _context)
             {
+                foreach(var game in db.Games)
+                {
+                    home.Games.Add(game);
+                }
                 foreach(var match in db.Matches)
                 {
                     match.Players = new List<Player>();
                     foreach(var player in db.Players)
                     {
                         Random rnd = new Random();
-                        if (player.curMatch == match.id)
+                        if (player.curMatch == match.MatchId)
                         {
                             int team = rnd.Next(1, 100);
                             if (match.Players.Count < 10) {
@@ -40,10 +48,11 @@ namespace pickupsv2.Controllers
                             }
                         }
                     }
-                    matches.Add(match);
+                    home.Matches.Add(match);
                 }
+
             }
-            return View(matches);
+            return View(home);
         }
         
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

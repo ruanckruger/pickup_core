@@ -1,0 +1,41 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> uManager
+@model GameInfo
+@{
+    var game = Model;
+    @if (User.Identity.IsAuthenticated)
+    {
+        @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+        {
+            <div class="create-match-container">
+                <h3>You're an admin for @(game.Game.Name), how dank! You can do some extra shit</h3>
+                <div class="form-group">
+                    <label for="map-list">Select Map</label>
+                    <select class="form-control" id="map-list">
+                        <option value="Coastal"> Coastal </option>
+                        <option value="Liberation"> Liberation </option>
+                        <option value="Derailed"> Derailed </option>
+                        <option value="Manorhouse V2"> Manorhouse V2 </option>
+                        <option value="Savoia"> Savoia </option>
+                    </select>
+                </div>
+                <button class="btn btn-success" id="create-new-match">
+                    Start Pickup!
+                </button>
+            </div>
+        }
+    }
+    var matches = game.Matches.Where(m => m.GameID == game.GameId);
+    @if (!matches.Any())
+    {
+    <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
+    <h5 class="text-center">List of currently online admins will be displayed here soon</h5>
+    } else {
+    <div class="match-container">
+        @foreach (var match in matches)
+        {
+            await Html.RenderPartialAsync("_MatchPartial", match);
+        }
+    </div>
+    }
+}    
