@@ -7,16 +7,16 @@
     {
         @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
         {
-            <div class="create-match-container">
+            <div gameId="@game.Game.GameId"  class="create-match-container">
                 <h3>You're an admin for @(game.Game.Name), how dank! You can do some extra shit</h3>
                 <div class="form-group">
                     <label for="map-list">Select Map</label>
                     <select class="form-control" id="map-list">
-                        <option value="Coastal"> Coastal </option>
-                        <option value="Liberation"> Liberation </option>
-                        <option value="Derailed"> Derailed </option>
-                        <option value="Manorhouse V2"> Manorhouse V2 </option>
-                        <option value="Savoia"> Savoia </option>
+                        <option value="">Select a map</option>
+                        @foreach(var map in game.Game.Maps)
+                        {
+                            <option value="@map.MapId">@map.Name</option>
+                        }
                     </select>
                 </div>
                 <button class="btn btn-success" id="create-new-match">

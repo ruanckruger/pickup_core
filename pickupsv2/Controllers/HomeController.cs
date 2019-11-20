@@ -32,6 +32,7 @@ namespace pickupsv2.Controllers
             {
                 foreach(var game in db.Games)
                 {
+                    game.Maps = db.Maps.Where(m => m.GameId == game.GameId).ToList();
                     home.Games.Add(game);
                 }
                 foreach(var match in db.Matches)

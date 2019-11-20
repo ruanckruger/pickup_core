@@ -18,31 +18,31 @@ $(document).ready(function () {
     var globalMessages = "";
     var matchMessages = "";
     game.on("RecieveGlobalMessage", function (userName, message) {
-        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+        var formattedMessage = `<p class="chat-message"><b>[` + userName + `]: </b> 
                             `+message+`
                         </p>`;
-            globalMessages += message;
+        globalMessages += formattedMessage;
         if ($("#global-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(globalMessages);
         $("#chat-toggle").addClass("new-message");
     });
     game.on("RecieveMatchMessage", function (userName, message) {
-        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+        var formattedMessage = `<p class="chat-message"><b>[` + userName + `]: </b> 
                             `+ message + `
                         </p>`;
-        matchMessages += message;
+        matchMessages += formattedMessage;
         if ($("#match-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(matchMessages);
         $("#chat-toggle").addClass("new-message");
     });
     $("#global-chat").click(function () {
         $("#match-chat").removeClass("current-chat-tab");
-        $(this).addClass("current-chat-tab")
+        $(this).addClass("current-chat-tab");
         $("#chat-window").html(globalMessages);
     });
     $("#match-chat").click(function () {
         $("#global-chat").removeClass("current-chat-tab");
-        $(this).addClass("current-chat-tab")
+        $(this).addClass("current-chat-tab");
         $("#chat-window").html(matchMessages);
     });
 
@@ -134,7 +134,7 @@ $(document).ready(function () {
         game.invoke("Reconnect");
 
         $('body').on("click", "#create-new-match", function () {
-            game.invoke("CreateGame",$("#map-list").val());
+            game.invoke("CreateGame", $("#map-list").val(), $(this).parent(".create-match-container").attr("gameId"));
         });
 
         $('body').on("click", ".join-match", function () {            

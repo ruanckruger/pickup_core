@@ -1,4 +1,5 @@
-﻿@inject SignInManager<Player> SignInManager
+﻿@using pickupsv2.Models;
+@inject SignInManager<Player> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }
