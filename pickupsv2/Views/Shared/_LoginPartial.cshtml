@@ -1,37 +1,42 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<IdentityUser> UserManager
+    <div class="navbar-nav">
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Profile</a>
+            </div>
+            <div class="nav-item">
+                <form class="form-inline" id="logout-button" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button id="logout-button" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
+                </form>
+            </div>
+            if (User.IsInRole("SuperAdmin"))
+            {
+                <div class="nav-item">
+                    <a class="nav-link text-dark" asp-controller="Games" asp-action="Index" title="Manage">Add Games</a>
+                </div>
+            }
+            <div id="chat-container">
+                <div id="chat-tab">
+                    <div class="current-chat-tab" id="global-chat">Global</div>
+                    <div id="match-chat">Match</div>
+                </div>
+                <div id="chat-window"></div>
+                <div id="chat-input">
+                    <input id="chat-message" type="text" placeholder="Your message" />
+                    <button id="send-message">send</button>
+                </div>
+                <div id="chat-toggle">
+                </div>
+            </div>
 
-<ul class="navbar-nav">
-    @if (User.Identity.IsAuthenticated)
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Manage Profile</a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" id="logout-button" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button id="logout-button" type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
-        </li>
-        
-        <div id="chat-container">
-            <div id="chat-tab">
-                <div class="current-chat-tab" id="global-chat">Global</div>
-                <div id="match-chat">Match</div>
+        }
+        else
+        {
+            <div class="nav-item">
+                <a asp-area="Identity" asp-page="/Account/Login" class="nav-link text-dark">Login</a>
+                <a asp-area="Identity" asp-page="/Account/Register" class="nav-link text-dark">Regsiter</a>
             </div>
-            <div id="chat-window"></div>
-            <div id="chat-input">
-                <input id="chat-message" type="text" placeholder="Your message" />
-                <button id="send-message">send</button>
-            </div>
-            <div id="chat-toggle">
-            </div>
-        </div>
-        
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-        </li>
-    }
-</ul>
+        }
+    </div>

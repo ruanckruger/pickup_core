@@ -14,9 +14,9 @@ namespace pickupsv2.Controllers
 {
     public class HomeController : Controller
     {
-        readonly PickupContext _context;
+        readonly ApplicationDbContext _context;
         readonly UserManager<IdentityUser> umngr;
-        public HomeController(PickupContext context, UserManager<IdentityUser> _umngr)
+        public HomeController(ApplicationDbContext context, UserManager<IdentityUser> _umngr)
         {
             _context = context;
             umngr = _umngr;
@@ -40,7 +40,7 @@ namespace pickupsv2.Controllers
                     foreach(var player in db.Players)
                     {
                         Random rnd = new Random();
-                        if (player.curMatch == match.MatchId)
+                        if (player.CurMatch == match.MatchId)
                         {
                             int team = rnd.Next(1, 100);
                             if (match.Players.Count < 10) {

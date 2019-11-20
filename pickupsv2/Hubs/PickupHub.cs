@@ -13,9 +13,9 @@ namespace pickupsv2.Hubs
     //[Authorize]
     public class PickupHub : Hub
     {
-        readonly PickupContext context;
+        readonly ApplicationDbContext context;
         UserManager<IdentityUser> uManager;
-        public PickupHub(PickupContext _context, UserManager<IdentityUser> umngr) {
+        public PickupHub(ApplicationDbContext _context, UserManager<IdentityUser> umngr) {
             context = _context;
             uManager = umngr;
         }
@@ -30,10 +30,10 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.Where(p => p.Id == curUserId).FirstOrDefault();
-                if(player.curMatch != null)
-                    await Groups.AddToGroupAsync(Context.ConnectionId, player.curMatch.ToString());
+                if(player.CurMatch != null)
+                    await Groups.AddToGroupAsync(Context.ConnectionId, player.CurMatch.ToString());
             }
         }
 
@@ -42,15 +42,15 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.Where(p => p.Id == curUserId).FirstOrDefault();
-                if (player.curMatch != null)
+                if (player.CurMatch != null)
                     await Leave();
 
                 await Groups.AddToGroupAsync(Context.ConnectionId, matchId.ToString());
-                player.curMatch = matchId;
+                player.CurMatch = matchId;
                 await db.SaveChangesAsync();
-                var newPlayerCount = db.Players.Where(p => p.curMatch == matchId).Count();
+                var newPlayerCount = db.Players.Where(p => p.CurMatch == matchId).Count();
                 await Clients.All.SendAsync("UserJoined", matchId, player.Id, newPlayerCount);
                 if (newPlayerCount == 10)
                 {
@@ -61,13 +61,13 @@ namespace pickupsv2.Hubs
         public async Task Leave()
         {
             var db = context;
-            var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+            var curUserId = uManager.GetUserId(Context.User);
             Player player = db.Players.FirstOrDefault(p => p.Id == curUserId);
-            var playerCurMatch = player.curMatch;
-            player.curMatch = null;
+            var playerCurMatch = player.CurMatch;
+            player.CurMatch = null;
             await db.SaveChangesAsync();
 
-            var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
+            var newPlayerCount = db.Players.Where(p => p.CurMatch == playerCurMatch).Count();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, playerCurMatch.ToString());
 
             await Clients.All.SendAsync("UserLeft",playerCurMatch, player.Id, newPlayerCount);            
@@ -84,7 +84,7 @@ namespace pickupsv2.Hubs
                 db.Matches.Add(match);
                 await db.SaveChangesAsync();
 
-                await Clients.All.SendAsync("GameCreated",match.id);
+                await Clients.All.SendAsync("GameCreated",match.MatchId);
             }
         }
         public async Task EndGame(Guid matchId)
@@ -93,12 +93,12 @@ namespace pickupsv2.Hubs
             {
                 Match match = new Match
                 {
-                    id = matchId
+                    MatchId = matchId
                 };
-                List<Player> removePlayers = db.Players.Where(p => p.curMatch == matchId).ToList();
+                List<Player> removePlayers = db.Players.Where(p => p.CurMatch == matchId).ToList();
                 foreach (var remPlayer in removePlayers)
                 {
-                    remPlayer.curMatch = null;
+                    remPlayer.CurMatch = null;
                     await db.SaveChangesAsync();
                 }
                 
@@ -113,7 +113,7 @@ namespace pickupsv2.Hubs
             await Clients.Group(matchId.ToString()).SendAsync("AcceptGame",matchId);
             using (var db = context)
             {
-                var matchAdmin = db.Matches.FirstOrDefault(m => m.id == matchId).Admin;
+                var matchAdmin = db.Matches.FirstOrDefault(m => m.MatchId == matchId).Admin;
                 if (Guid.Parse(uManager.GetUserId(Context.User)) == matchAdmin)
                     await Clients.Client(Context.ConnectionId).SendAsync("AdminFinalize",matchId);
             }
@@ -122,21 +122,21 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
                 match.Admin = userId;
                 await db.SaveChangesAsync();
                 await Clients.All.SendAsync("NewAdmin", matchId);
             }
         }
-        public async Task Kick(Guid matchId, Guid userId)
+        public async Task Kick(Guid matchId, string userId)
         {
             var db = context;
             Player player = db.Players.FirstOrDefault(p => p.Id == userId);
-            var playerCurMatch = player.curMatch;
-            player.curMatch = null;
+            var playerCurMatch = player.CurMatch;
+            player.CurMatch = null;
             await db.SaveChangesAsync();
 
-            var newPlayerCount = db.Players.Where(p => p.curMatch == playerCurMatch).Count();
+            var newPlayerCount = db.Players.Where(p => p.CurMatch == playerCurMatch).Count();
             await Groups.RemoveFromGroupAsync(Context.ConnectionId,matchId.ToString());
 
             await Clients.All.SendAsync("UserLeft", playerCurMatch, player.Id, newPlayerCount);
@@ -156,10 +156,10 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
 
-                await Clients.All.SendAsync("RecieveGlobalMessage", player.steamUsername,msg);
+                await Clients.All.SendAsync("RecieveGlobalMessage", player.Username, msg);
             }
         }
 
@@ -167,10 +167,10 @@ namespace pickupsv2.Hubs
         {
             using (var db = context)
             {
-                var curUserId = Guid.Parse(uManager.GetUserId(Context.User));
+                var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
-                if(player.curMatch != null)
-                    await Clients.Group(player.curMatch.ToString()).SendAsync("RecieveMatchMessage", player.steamUsername, msg);
+                if(player.CurMatch != null)
+                    await Clients.Group(player.CurMatch.ToString()).SendAsync("RecieveMatchMessage", player.Username, msg);
             }
         }
         // #endregion

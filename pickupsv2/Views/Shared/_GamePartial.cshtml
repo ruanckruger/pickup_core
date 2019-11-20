@@ -1,6 +1,6 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<IdentityUser> uManager
-@model GameInfo
+@model GameMatches
 @{
     var game = Model;
     @if (User.Identity.IsAuthenticated)
@@ -25,7 +25,7 @@
             </div>
         }
     }
-    var matches = game.Matches.Where(m => m.GameID == game.GameId);
+    var matches = game.Matches.Where(m => m.GameID == game.Game.GameId);
     @if (!matches.Any())
     {
     <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>

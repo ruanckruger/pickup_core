@@ -4,37 +4,7 @@
 @inject Microsoft.AspNetCore.Identity.UserManager<IdentityUser> uManager
 @{ var match = Model;}
 @foreach (var player in match.Players)
-{
-
-    <div class="player-container
-         @if (player.Id == match.Admin)
-            {@("match-admin")}"
-            id="@player.Id">
-        <div class="player">
-            <a class="player-link" href="@player.steaumUrl" target="_blank">
-                @if (player.avatar != null)
-                {
-                    <img class="account-image" src="@player.avatar" />
-                }
-                else
-                {
-                    <img class="account-image" src="@player.avatar" />
-                }
-            </a>
-        </div>
-        <a class="player-link" href="@player.steaumUrl" target="_blank">
-            <h3 class="username">@Html.DisplayFor(modelItem => player.steamUsername)</h3>
-        </a>
-        @if (User.Identity.IsAuthenticated)
-        {
-            if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
-            {
-                <div class='add-roles'>
-                    <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
-                    <a class='add-role kick' player-id="@player.Id">Kickify</a>
-                </div>
-            }
-        }
-    </div>
+{    
+    await Html.RenderPartialAsync("_PlayerPartial", player);
 }
 

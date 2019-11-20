@@ -43,20 +43,22 @@ namespace pickupsv2
             });
 
             services
-                .AddDbContext<PickupContext>
+                .AddDbContext<ApplicationDbContext>
                     (item => item.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
 
             services.AddDefaultIdentity<IdentityUser>()
                 .AddRoles<IdentityRole>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
-                .AddEntityFrameworkStores<PickupContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddTransient<UserManager<Player>>();
-            services.AddTransient<PickupContext>();
+            services.AddTransient<ApplicationDbContext>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddSignalR();
             services
                 .AddAuthentication()
+                //.AddGoogle()
+                //.AddFacebook()
                 .AddSteam();
         }
 

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace pickupsv2.Data.Migrations
+namespace pickupsv2.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,6 +45,76 @@ namespace pickupsv2.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Games",
+                columns: table => new
+                {
+                    GameId = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Rules = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Games", x => x.GameId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Maps",
+                columns: table => new
+                {
+                    MapId = table.Column<Guid>(nullable: false),
+                    GameId = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    Image = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Maps", x => x.MapId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Matches",
+                columns: table => new
+                {
+                    MatchId = table.Column<Guid>(nullable: false),
+                    GameID = table.Column<Guid>(nullable: false),
+                    Map = table.Column<string>(nullable: true),
+                    Admin = table.Column<Guid>(nullable: false),
+                    NeedHost = table.Column<bool>(nullable: false),
+                    Host = table.Column<Guid>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Matches", x => x.MatchId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SteamPlayer",
+                columns: table => new
+                {
+                    steamid = table.Column<string>(nullable: false),
+                    communityvisibilitystate = table.Column<int>(nullable: false),
+                    profilestate = table.Column<int>(nullable: false),
+                    personaname = table.Column<string>(nullable: true),
+                    lastlogoff = table.Column<int>(nullable: false),
+                    profileurl = table.Column<string>(nullable: true),
+                    avatar = table.Column<string>(nullable: true),
+                    avatarmedium = table.Column<string>(nullable: true),
+                    avatarfull = table.Column<string>(nullable: true),
+                    personastate = table.Column<int>(nullable: false),
+                    realname = table.Column<string>(nullable: true),
+                    primaryclanid = table.Column<string>(nullable: true),
+                    timecreated = table.Column<int>(nullable: false),
+                    personastateflags = table.Column<int>(nullable: false),
+                    loccountrycode = table.Column<string>(nullable: true),
+                    locstatecode = table.Column<string>(nullable: true),
+                    loccityid = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SteamPlayer", x => x.steamid);
                 });
 
             migrationBuilder.CreateTable(
@@ -153,6 +223,33 @@ namespace pickupsv2.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Players",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(nullable: false),
+                    Username = table.Column<string>(nullable: true),
+                    Avatar = table.Column<string>(nullable: true),
+                    CurMatch = table.Column<Guid>(nullable: true),
+                    steamid = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Players", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Players_Matches_CurMatch",
+                        column: x => x.CurMatch,
+                        principalTable: "Matches",
+                        principalColumn: "MatchId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Players_SteamPlayer_steamid",
+                        column: x => x.steamid,
+                        principalTable: "SteamPlayer",
+                        principalColumn: "steamid",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -191,6 +288,16 @@ namespace pickupsv2.Data.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_CurMatch",
+                table: "Players",
+                column: "CurMatch");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Players_steamid",
+                table: "Players",
+                column: "steamid");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -211,10 +318,25 @@ namespace pickupsv2.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Maps");
+
+            migrationBuilder.DropTable(
+                name: "Players");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Matches");
+
+            migrationBuilder.DropTable(
+                name: "SteamPlayer");
         }
     }
 }

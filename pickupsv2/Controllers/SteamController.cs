@@ -17,10 +17,10 @@ namespace pickupsv2.Controllers
     //[Authorize]
     public class SteamController : Controller
     {
-        PickupContext context;
+        ApplicationDbContext context;
         UserManager<IdentityUser> umngr;
         SignInManager<IdentityUser> sgnIn;
-        public SteamController(PickupContext _context, UserManager<IdentityUser> _umngr, SignInManager<IdentityUser> _sgn)
+        public SteamController(ApplicationDbContext _context, UserManager<IdentityUser> _umngr, SignInManager<IdentityUser> _sgn)
         {
             context = _context;
             umngr = _umngr;
@@ -39,23 +39,19 @@ namespace pickupsv2.Controllers
                 var responseData = JsonConvert.DeserializeObject<RootObject>(result);
 
                 SteamPlayer pData = responseData.response.players[0];
-                var existing = context.Players.FirstOrDefault(p => p.steamId == steamids);
+                var existing = context.Players.FirstOrDefault(p => p.SteamPlayer.steamid == steamids);
                 if ( existing != null)
                 {
-                    existing.steamUsername = pData.personaname;
-                    existing.avatar = pData.avatarfull;
+                    existing.Username = pData.personaname;
+                    existing.SteamPlayer.avatar = pData.avatarfull;
                 } else
                 {
                     var curUser = umngr.GetUserId(User);
                     var player = new Player()
                     {
-                        Id = Guid.Parse(curUser),
-                        avatar = pData.avatarfull,
-                        steamId = pData.steamid,
-                        steaumUrl = pData.profileurl,
-                        steamUsername = pData.personaname,
-                        name = pData.realname
-                        
+                        Id = curUser,
+                        SteamPlayer = pData,
+                        Username = pData.personaname                        
                     };
                     context.Players.Add(player);
                 }
