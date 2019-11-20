@@ -47,7 +47,7 @@ namespace pickupsv2
                     (item => item.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
 
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddDefaultIdentity<Player>()
                 .AddRoles<IdentityRole>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

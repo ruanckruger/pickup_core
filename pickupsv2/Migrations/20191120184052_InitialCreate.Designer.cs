@@ -10,7 +10,7 @@ using pickupsv2.Data;
 namespace pickupsv2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191119105652_InitialCreate")]
+    [Migration("20191120184052_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,6 +75,9 @@ namespace pickupsv2.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -114,6 +117,8 @@ namespace pickupsv2.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -213,6 +218,8 @@ namespace pickupsv2.Migrations
 
                     b.HasKey("MapId");
 
+                    b.HasIndex("GameId");
+
                     b.ToTable("Maps");
                 });
 
@@ -234,28 +241,6 @@ namespace pickupsv2.Migrations
                     b.HasKey("MatchId");
 
                     b.ToTable("Matches");
-                });
-
-            modelBuilder.Entity("pickupsv2.Models.Player", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Avatar");
-
-                    b.Property<Guid?>("CurMatch");
-
-                    b.Property<string>("Username");
-
-                    b.Property<string>("steamid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CurMatch");
-
-                    b.HasIndex("steamid");
-
-                    b.ToTable("Players");
                 });
 
             modelBuilder.Entity("pickupsv2.Models.SteamPlayer", b =>
@@ -300,6 +285,23 @@ namespace pickupsv2.Migrations
                     b.ToTable("SteamPlayer");
                 });
 
+            modelBuilder.Entity("pickupsv2.Models.Player", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<byte[]>("Avatar");
+
+                    b.Property<Guid?>("CurMatch");
+
+                    b.Property<string>("steamid");
+
+                    b.HasIndex("CurMatch");
+
+                    b.HasIndex("steamid");
+
+                    b.HasDiscriminator().HasValue("Player");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -342,6 +344,14 @@ namespace pickupsv2.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser")
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("pickupsv2.Models.Map", b =>
+                {
+                    b.HasOne("pickupsv2.Models.Game")
+                        .WithMany("Maps")
+                        .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

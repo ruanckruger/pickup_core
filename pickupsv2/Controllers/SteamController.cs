@@ -18,9 +18,9 @@ namespace pickupsv2.Controllers
     public class SteamController : Controller
     {
         ApplicationDbContext context;
-        UserManager<IdentityUser> umngr;
-        SignInManager<IdentityUser> sgnIn;
-        public SteamController(ApplicationDbContext _context, UserManager<IdentityUser> _umngr, SignInManager<IdentityUser> _sgn)
+        UserManager<Player> umngr;
+        SignInManager<Player> sgnIn;
+        public SteamController(ApplicationDbContext _context, UserManager<Player> _umngr, SignInManager<Player> _sgn)
         {
             context = _context;
             umngr = _umngr;
@@ -42,8 +42,8 @@ namespace pickupsv2.Controllers
                 var existing = context.Players.FirstOrDefault(p => p.SteamPlayer.steamid == steamids);
                 if ( existing != null)
                 {
-                    existing.Username = pData.personaname;
-                    existing.SteamPlayer.avatar = pData.avatarfull;
+                    existing.SteamPlayer = pData;
+                    existing.UserName = pData.personaname;
                 } else
                 {
                     var curUser = umngr.GetUserId(User);
@@ -51,7 +51,7 @@ namespace pickupsv2.Controllers
                     {
                         Id = curUser,
                         SteamPlayer = pData,
-                        Username = pData.personaname                        
+                        UserName = pData.personaname                        
                     };
                     context.Players.Add(player);
                 }

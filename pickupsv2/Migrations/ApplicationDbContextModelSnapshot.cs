@@ -291,7 +291,7 @@ namespace pickupsv2.Migrations
 
                     b.Property<Guid?>("CurMatch");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("DisplayName");
 
                     b.Property<string>("steamid");
 

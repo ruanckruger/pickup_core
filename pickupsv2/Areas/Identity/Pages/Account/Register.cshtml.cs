@@ -41,9 +41,14 @@ namespace pickupsv2.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
+            [StringLength(100)]
             [Display(Name = "Username")]
             public string Username { get; set; }
+
+            [Required]
+            [StringLength(100)]
+            [Display(Name = "Display Name")]
+            public string DisplayName { get; set; }
 
             [Required]
             [EmailAddress]
@@ -72,7 +77,7 @@ namespace pickupsv2.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (ModelState.IsValid)
             {
-                var user = new Player { UserName = Input.Username, Email = Input.Email };
+                var user = new Player { UserName = Input.Username, Email = Input.Email, DisplayName = Input.DisplayName };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

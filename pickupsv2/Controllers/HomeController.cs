@@ -15,8 +15,8 @@ namespace pickupsv2.Controllers
     public class HomeController : Controller
     {
         readonly ApplicationDbContext _context;
-        readonly UserManager<IdentityUser> umngr;
-        public HomeController(ApplicationDbContext context, UserManager<IdentityUser> _umngr)
+        readonly UserManager<Player> umngr;
+        public HomeController(ApplicationDbContext context, UserManager<Player> _umngr)
         {
             _context = context;
             umngr = _umngr;

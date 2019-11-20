@@ -1,5 +1,5 @@
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> uManager
+@inject UserManager<Player> uManager
 @model Player
 @{var player = Model;}
 <div class="player-container
@@ -11,7 +11,7 @@
         </div>
     </div>
     <div class="player-link">
-        <h3 class="username">@Html.DisplayFor(modelItem => player.Username)</h3>
+        <h3 class="username">@Html.DisplayFor(modelItem => player.UserName)</h3>
     </div>
     @if (User.Identity.IsAuthenticated)
     {

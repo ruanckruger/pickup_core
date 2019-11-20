@@ -14,8 +14,8 @@ namespace pickupsv2.Hubs
     public class PickupHub : Hub
     {
         readonly ApplicationDbContext context;
-        UserManager<IdentityUser> uManager;
-        public PickupHub(ApplicationDbContext _context, UserManager<IdentityUser> umngr) {
+        UserManager<Player> uManager;
+        public PickupHub(ApplicationDbContext _context, UserManager<Player> umngr) {
             context = _context;
             uManager = umngr;
         }
@@ -159,7 +159,7 @@ namespace pickupsv2.Hubs
                 var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
 
-                await Clients.All.SendAsync("RecieveGlobalMessage", player.Username, msg);
+                await Clients.All.SendAsync("RecieveGlobalMessage", player.UserName, msg);
             }
         }
 
@@ -170,7 +170,7 @@ namespace pickupsv2.Hubs
                 var curUserId = uManager.GetUserId(Context.User);
                 var player = db.Players.FirstOrDefault(p => p.Id == curUserId);
                 if(player.CurMatch != null)
-                    await Clients.Group(player.CurMatch.ToString()).SendAsync("RecieveMatchMessage", player.Username, msg);
+                    await Clients.Group(player.CurMatch.ToString()).SendAsync("RecieveMatchMessage", player.UserName, msg);
             }
         }
         // #endregion

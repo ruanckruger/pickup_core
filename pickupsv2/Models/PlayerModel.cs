@@ -9,6 +9,7 @@ namespace pickupsv2.Models
     public class Player : IdentityUser
     {
         public byte[]  Avatar { get; set; }
+        public string DisplayName { get; set; }
         public Guid? CurMatch{ get; set; }
         [ForeignKey("steamid")]
         public SteamPlayer SteamPlayer{ get; set; }

@@ -12,20 +12,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using pickupsv2.Data;
+using pickupsv2.Models;
 
 namespace pickupsv2.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class ExternalLoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<Player> _signInManager;
+        private readonly UserManager<Player> _userManager;
         private readonly ILogger<ExternalLoginModel> _logger;
 
 
         public ExternalLoginModel(
-            SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+            SignInManager<Player> signInManager,
+            UserManager<Player> userManager,
             ILogger<ExternalLoginModel> logger
             )
         {
@@ -122,7 +123,7 @@ namespace pickupsv2.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new Player { UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

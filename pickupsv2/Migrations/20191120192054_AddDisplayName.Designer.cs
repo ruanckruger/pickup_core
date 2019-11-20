@@ -10,8 +10,8 @@ using pickupsv2.Data;
 namespace pickupsv2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191119212547_Add avatar")]
-    partial class Addavatar
+    [Migration("20191120192054_AddDisplayName")]
+    partial class AddDisplayName
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -293,7 +293,7 @@ namespace pickupsv2.Migrations
 
                     b.Property<Guid?>("CurMatch");
 
-                    b.Property<string>("Username");
+                    b.Property<string>("DisplayName");
 
                     b.Property<string>("steamid");
 

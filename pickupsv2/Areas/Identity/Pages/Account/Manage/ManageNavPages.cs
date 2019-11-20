@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using pickupsv2.Models;
 
 namespace pickupsv2.Areas.Identity.Pages.Account.Manage
 {

@@ -1,7 +1,7 @@
 ﻿@model Match
 @using Microsoft.AspNetCore.Identity;
 
-@inject Microsoft.AspNetCore.Identity.UserManager<IdentityUser> uManager
+@inject Microsoft.AspNetCore.Identity.UserManager<Player> uManager
 @{ var match = Model;}
 @foreach (var player in match.Players)
 {    
