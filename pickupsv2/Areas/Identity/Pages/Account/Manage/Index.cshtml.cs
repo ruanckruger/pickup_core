@@ -44,6 +44,9 @@ namespace pickupsv2.Areas.Identity.Pages.Account.Manage
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            [Display(Name = "Display Name")]
+            public string DisplayName { get; set; }
 
             [Phone]
             [Display(Name = "Avatar")]

@@ -42,12 +42,12 @@ namespace pickupsv2.Areas.Identity.Pages.Account
         {
             [Required]
             [StringLength(100)]
-            [Display(Name = "Username")]
+            [Display(Name = "Username", Prompt = "This is will be used as an unique identifier.")]
             public string Username { get; set; }
 
             [Required]
             [StringLength(100)]
-            [Display(Name = "Display Name")]
+            [Display(Name = "Display Name", Prompt = "This is will be displayed publicly.")]
             public string DisplayName { get; set; }
 
             [Required]
