@@ -3,30 +3,8 @@
 @model GameMatches
     <div class="game-container">
 @{
-        var game = Model;
-        @if (User.Identity.IsAuthenticated)
-        {
-            @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
-            {
-                <div gameId="@game.Game.GameId" class="create-match-container container">
-                    <h3>You're an admin for @(game.Game.Name), how dank! You can do some extra shit</h3>
-                    <div class="form-group">
-                        <label for="map-list">Select Map</label>
-                        <select class="form-control" id="map-list">
-                            <option value="">Select a map</option>
-                            @foreach (var map in game.Game.Maps)
-                            {
-                                <option value="@map.MapId">@map.Name</option>
-                            }
-                        </select>
-                    </div>
-                    <button class="btn btn-success" id="create-new-match">
-                        Start Pickup!
-                    </button>
-                </div>
-            }
-        }
-        var matches = game.Matches.Where(m => m.GameID == game.Game.GameId);
+    var game = Model;
+    var matches = game.Matches.Where(m => m.Game.GameId == game.Game.GameId);
         @if (!matches.Any())
         {
             <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
@@ -35,10 +13,12 @@
         else
         {
             <div class="match-container">
-                @foreach (var match in matches)
-                {
-                    await Html.RenderPartialAsync("_MatchPartial", match);
-                }
+                <div class="row">
+                    @foreach (var match in matches)
+                    {
+                        await Html.RenderPartialAsync("_MatchPartial", match);
+                    }
+                </div>
             </div>
         }
         }

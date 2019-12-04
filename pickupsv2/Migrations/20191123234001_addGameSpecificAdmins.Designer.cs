@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pickupsv2.Data;
 
 namespace pickupsv2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20191123234001_addGameSpecificAdmins")]
+    partial class addGameSpecificAdmins
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,7 +248,7 @@ namespace pickupsv2.Migrations
 
                     b.Property<Guid>("Admin");
 
-                    b.Property<Guid?>("GameId");
+                    b.Property<Guid>("GameID");
 
                     b.Property<Guid?>("Host");
 
@@ -255,8 +257,6 @@ namespace pickupsv2.Migrations
                     b.Property<bool>("NeedHost");
 
                     b.HasKey("MatchId");
-
-                    b.HasIndex("GameId");
 
                     b.ToTable("Matches");
                 });
@@ -384,13 +384,6 @@ namespace pickupsv2.Migrations
                         .WithMany("Maps")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("pickupsv2.Models.Match", b =>
-                {
-                    b.HasOne("pickupsv2.Models.Game", "Game")
-                        .WithMany()
-                        .HasForeignKey("GameId");
                 });
 
             modelBuilder.Entity("pickupsv2.Models.Player", b =>

@@ -86,7 +86,7 @@ $(document).ready(function () {
             var readyClip = new Audio('../audio/ready.mp3');
             readyClip.play();
             gameReadyTimer = setTimeout(function () {
-                if (accepted == false) {
+                if (accepted === false) {
                     game.invoke("Leave");
                 }
                 $(modalId).fadeOut();
@@ -108,7 +108,7 @@ $(document).ready(function () {
     game.on("AdminFinalize", function (mId) {
         console.log("Yo, admin guy, you got dis");
         setTimeout(function () {$(".match-container[match-id='" + mId + "']")
-            if ($(".match-container[match-id='" + mId + "']").find(".accepted-match").length == 10) {
+            if ($(".match-container[match-id='" + mId + "']").find(".accepted-match").length === 10) {
                 game.invoke("FullAccept", mId);
             } else {
                 $.each($(".match-container[match-id='" + mId + "']").find(".declined-match"), function () {
@@ -134,7 +134,7 @@ $(document).ready(function () {
         game.invoke("Reconnect");
 
         $('body').on("click", "#create-new-match", function () {
-            game.invoke("CreateGame", $("#map-list").val(), $(this).parent(".create-match-container").attr("gameId"));
+            game.invoke("CreateGame", $("#map-list").find("option:selected").attr('value'), $("#game-list").find("option:selected").attr('value'));
         });
 
         $('body').on("click", ".join-match", function () {            

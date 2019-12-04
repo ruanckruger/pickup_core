@@ -3,7 +3,7 @@
 @model Player
 @{var player = Model;}
 <div class="player-container
-    @if (player.Id == (string)ViewData["matchAdmin"]){@("match-admin")}"
+    @if (player.Id == ViewData["matchAdmin"].ToString()){@("match-admin")}"
      id="@player.Id">
     <div class="player">
         <div class="player-link">
@@ -15,7 +15,7 @@
     </div>
     @if (User.Identity.IsAuthenticated)
     {
-        if (uManager.GetUserId(User) == (string)ViewData["matchAdmin"])
+        if (uManager.GetUserId(User) == ViewData["matchAdmin"].ToString())
         {
             <div class='add-roles'>
                 <a class='add-role adminfy' player-id="@player.Id">Adminify</a>

@@ -9,7 +9,7 @@ namespace pickupsv2.Models
     {
         [Key]
         public Guid MatchId { get; set; }
-        public Guid GameID { get; set; }
+        public Game Game { get; set; }
         public string Map { get; set; }
         [ForeignKey("CurMatch")]
         public List<Player> Players { get; set; }
@@ -25,6 +25,8 @@ namespace pickupsv2.Models
         public string Name { get; set; }
         public string Rules { get; set; }
         public List<Map> Maps { get; set; }
+        [ForeignKey("Id")]
+        public List<GameAdmin> Admins { get; set; }
     }
 
     public class Map

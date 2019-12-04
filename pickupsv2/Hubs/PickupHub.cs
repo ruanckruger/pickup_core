@@ -72,14 +72,14 @@ namespace pickupsv2.Hubs
 
             await Clients.All.SendAsync("UserLeft",playerCurMatch, player.Id, newPlayerCount);            
         }
-        public async Task CreateGame(string Map, string GameId)
+        public async Task CreateGame(string mapId, string gameId)
         {
             using (var db = context)
             {
                 Match match = new Match();
                 
-                match.Map = db.Maps.FirstOrDefault(m => m.MapId == Guid.Parse(Map)).Name;
-                match.GameID = Guid.Parse(GameId);
+                match.Map = db.Maps.FirstOrDefault(m => m.MapId == Guid.Parse(mapId)).Name;
+                match.Game = db.Games.FirstOrDefault(g => g.GameId == Guid.Parse(gameId));
                 match.Admin = Guid.Parse(uManager.GetUserId(Context.User));
                 
                 db.Matches.Add(match);

@@ -54,5 +54,22 @@ namespace pickupsv2.Controllers
                 return PartialView(match);
             }
         }
+        public IActionResult Match(Guid matchId)
+        {
+            using (var db = context)
+            {
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
+                var players = db.Players.Where(p => p.CurMatch == matchId);
+                match.Players = players.ToList();
+                return View(match);
+            }
+        }
+        public IActionResult _MapListPartial(Guid gameId)
+        {
+            List<Map> maps = context.Maps.Where(m => m.GameId == gameId).ToList();
+            if (!maps.Any())
+                return null;
+            return PartialView(maps);
+        }
     }
 }

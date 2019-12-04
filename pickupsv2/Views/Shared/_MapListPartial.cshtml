@@ -1,0 +1,14 @@
+@model List<Map>
+
+<div class="form-group">
+    <label for="map-list">Select Map</label>
+    <select class="form-control" id="map-list">
+        <option value="">Select a Map</option>
+        @foreach(var map in Model)
+        {
+        <option value="@map.MapId">
+            @map.Name
+        </option>
+        }
+    </select>
+</div>

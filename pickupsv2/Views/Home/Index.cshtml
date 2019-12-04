@@ -4,13 +4,36 @@
 @{
     ViewData["Title"] = "ZA Pickups";
 }
+@if (User.Identity.IsAuthenticated)
+{
+    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+    {
+    <div class="create-match-container container">
+        <h3>You're an admin, how dank! You can do some extra shit</h3>
+        <div class="form-group">
+            <label for="map-list">Select Game</label>
+            <select class="form-control" id="game-list">
+                <option value="">Select a Game</option>
+                @foreach (var game in Model.Games)
+                {
+                    <option value="@game.GameId">@game.Name</option>
+                }
+            </select>
+        </div>
+        <div id="map-list-container"></div>
+        <button class="btn btn-success" id="create-new-match">
+            Start Pickup!
+        </button>
+    </div>
+    }
+}
 
 <div id="games-container">
     @foreach (var game in Model.Games)
     {
         var gameMatches = new GameMatches();
         gameMatches.Game = game;
-        gameMatches.Matches = Model.Matches.Where(m => m.GameID == game.GameId).ToList();
+        gameMatches.Matches = Model.Matches.Where(m => m.Game.GameId == game.GameId).ToList();
         await Html.RenderPartialAsync("_GamePartial", gameMatches);
     }
 </div>

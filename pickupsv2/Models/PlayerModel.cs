@@ -11,8 +11,19 @@ namespace pickupsv2.Models
         public byte[]  Avatar { get; set; }
         public string DisplayName { get; set; }
         public Guid? CurMatch{ get; set; }
+
+        [ForeignKey("GameId")]
+        public List<GameAdmin> AdminFor { get; set; }
         [ForeignKey("steamid")]
         public SteamPlayer SteamPlayer{ get; set; }
+    }
+    public class GameAdmin
+    {
+        [Key]
+        public Guid GameAdminId { get; set; }
+
+        public Game Game { get; set; }
+        public Player Player { get; set; }
     }
     public class SteamPlayer
     {
