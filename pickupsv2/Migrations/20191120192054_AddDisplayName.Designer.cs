@@ -3,19 +3,21 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pickupsv2.Data;
 
 namespace pickupsv2.Migrations
 {
-    [DbContext(typeof(PickupContext))]
-    partial class PickupContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(ApplicationDbContext))]
+    [Migration("20191120192054_AddDisplayName")]
+    partial class AddDisplayName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -73,6 +75,9 @@ namespace pickupsv2.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
@@ -112,6 +117,8 @@ namespace pickupsv2.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -184,44 +191,117 @@ namespace pickupsv2.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("pickupsv2.Models.Game", b =>
+                {
+                    b.Property<Guid>("GameId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name");
+
+                    b.Property<string>("Rules");
+
+                    b.HasKey("GameId");
+
+                    b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("pickupsv2.Models.Map", b =>
+                {
+                    b.Property<Guid>("MapId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<Guid>("GameId");
+
+                    b.Property<string>("Image");
+
+                    b.Property<string>("Name");
+
+                    b.HasKey("MapId");
+
+                    b.HasIndex("GameId");
+
+                    b.ToTable("Maps");
+                });
+
             modelBuilder.Entity("pickupsv2.Models.Match", b =>
                 {
-                    b.Property<Guid>("id")
+                    b.Property<Guid>("MatchId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("Admin");
 
+                    b.Property<Guid>("GameID");
+
+                    b.Property<Guid?>("Host");
+
                     b.Property<string>("Map");
 
-                    b.HasKey("id");
+                    b.Property<bool>("NeedHost");
+
+                    b.HasKey("MatchId");
 
                     b.ToTable("Matches");
                 });
 
-            modelBuilder.Entity("pickupsv2.Models.Player", b =>
+            modelBuilder.Entity("pickupsv2.Models.SteamPlayer", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<string>("steamid")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<Guid?>("Matchid");
 
                     b.Property<string>("avatar");
 
-                    b.Property<Guid?>("curMatch");
+                    b.Property<string>("avatarfull");
 
-                    b.Property<string>("name");
+                    b.Property<string>("avatarmedium");
 
-                    b.Property<string>("steamId");
+                    b.Property<int>("communityvisibilitystate");
 
-                    b.Property<string>("steamUsername");
+                    b.Property<int>("lastlogoff");
 
-                    b.Property<string>("steaumUrl");
+                    b.Property<int>("loccityid");
 
-                    b.HasKey("Id");
+                    b.Property<string>("loccountrycode");
 
-                    b.HasIndex("Matchid");
+                    b.Property<string>("locstatecode");
 
-                    b.ToTable("Players");
+                    b.Property<string>("personaname");
+
+                    b.Property<int>("personastate");
+
+                    b.Property<int>("personastateflags");
+
+                    b.Property<string>("primaryclanid");
+
+                    b.Property<int>("profilestate");
+
+                    b.Property<string>("profileurl");
+
+                    b.Property<string>("realname");
+
+                    b.Property<int>("timecreated");
+
+                    b.HasKey("steamid");
+
+                    b.ToTable("SteamPlayer");
+                });
+
+            modelBuilder.Entity("pickupsv2.Models.Player", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<byte[]>("Avatar");
+
+                    b.Property<Guid?>("CurMatch");
+
+                    b.Property<string>("DisplayName");
+
+                    b.Property<string>("steamid");
+
+                    b.HasIndex("CurMatch");
+
+                    b.HasIndex("steamid");
+
+                    b.HasDiscriminator().HasValue("Player");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -269,11 +349,23 @@ namespace pickupsv2.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("pickupsv2.Models.Map", b =>
+                {
+                    b.HasOne("pickupsv2.Models.Game")
+                        .WithMany("Maps")
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("pickupsv2.Models.Player", b =>
                 {
                     b.HasOne("pickupsv2.Models.Match")
                         .WithMany("Players")
-                        .HasForeignKey("Matchid");
+                        .HasForeignKey("CurMatch");
+
+                    b.HasOne("pickupsv2.Models.SteamPlayer", "SteamPlayer")
+                        .WithMany()
+                        .HasForeignKey("steamid");
                 });
 #pragma warning restore 612, 618
         }

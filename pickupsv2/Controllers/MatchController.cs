@@ -10,8 +10,8 @@ namespace pickupsv2.Controllers
 {
     public class MatchController : Controller
     {
-        PickupContext context;
-        public MatchController(PickupContext _context)
+        ApplicationDbContext context;
+        public MatchController(ApplicationDbContext _context)
         {
             context = _context;
         }
@@ -24,9 +24,9 @@ namespace pickupsv2.Controllers
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
                 var curPlayers = new List<Player>();
-                foreach (var player in db.Players.Where(n => n.curMatch == match.id))
+                foreach (var player in db.Players.Where(n => n.CurMatch == match.MatchId))
                 {
                     curPlayers.Add(player);
                 }
@@ -34,11 +34,11 @@ namespace pickupsv2.Controllers
                 return PartialView("_MatchPartial",match);
             }
         }
-        public IActionResult PlayerInfo(Guid playerId, Guid matchId)
+        public IActionResult PlayerInfo(string playerId, Guid matchId)
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
                 var player = db.Players.FirstOrDefault(p => p.Id == playerId);                
                 ViewData["matchAdmin"] = match.Admin;
                 return PartialView("_PlayerPartial",player);
@@ -48,11 +48,28 @@ namespace pickupsv2.Controllers
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.id == matchId);
-                var players = db.Players.Where(p => p.curMatch == matchId);
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
+                var players = db.Players.Where(p => p.CurMatch == matchId);
                 match.Players = players.ToList();
                 return PartialView(match);
             }
+        }
+        public IActionResult Match(Guid matchId)
+        {
+            using (var db = context)
+            {
+                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
+                var players = db.Players.Where(p => p.CurMatch == matchId);
+                match.Players = players.ToList();
+                return View(match);
+            }
+        }
+        public IActionResult _MapListPartial(Guid gameId)
+        {
+            List<Map> maps = context.Maps.Where(m => m.GameId == gameId).ToList();
+            if (!maps.Any())
+                return null;
+            return PartialView(maps);
         }
     }
 }

@@ -1,48 +1,23 @@
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> uManager
+@inject UserManager<Player> uManager
 @model Match
-@{var match = Model;}
+@{ var match = Model; }
+<div match-id="@match.MatchId" class="text-center match-container col-md-4 col-sm-6 col-lg-3 @{ if (match.Players.Count == 10) {@("game-full");}; }" style="background-image: url('/img/maps/@(match.Map).png');">
+    <div class="match-header">
+        <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
+        @if (User.Identity.IsAuthenticated)
+        {
+            var curUser = uManager.GetUserId(User);
 
-@if (match.Players.Count == 10)
-{
-    await Html.RenderPartialAsync("_FullMatch", match);
-}
-else
-{
-    <div match-id="@match.id" class="text-center match-container" style="background-image: url('/img/maps/@(match.Map).png');">
-        <div class="match-header">
-            <h3>@Html.DisplayFor(modelItem => match.Map) - <span class="match-player-count">@Html.DisplayFor(modelItem => match.Players.Count)</span> / 10</h3>
-            @if (User.Identity.IsAuthenticated)
+            <a href="/Match/Match?matchId=@match.MatchId" class="go-to-match btn">Go To Match</a>
+
+            if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
             {
-                var curUser = uManager.GetUserId(User);
-                if (match.Players.Where(p => p.Id == Guid.Parse(curUser)).Count() == 0)
-                {
-                    <button class="join-match btn">Join Match</button>
-                }
-                else if (match.Players.Count == 10)
-                {
-                    <button class="full-game btn">Game is Full</button>
-                }
-                else
-                {
-                    <button class="leave-match btn">Leave Match</button>
-                }
-                if (Guid.Parse(uManager.GetUserId(User)) == match.Admin)
-                {
-                    <button class="end-match btn">End Match</button>
-                }
+                <button class="end-match btn">End Match</button>
             }
-        </div>
-        <div class="curPlayers text-center ">
-            @foreach (var player in match.Players)
-            {
-                await Html.RenderPartialAsync("_PlayerPartial", player,
-                    new ViewDataDictionary(ViewData)
-                    {
-                            { "matchAdmin", match.Admin }
-                    });
-            }
-        </div>
+        }
     </div>
-}
-    
+    <div class="curPlayers row text-center ">
+
+    </div>
+</div>    

@@ -1,0 +1,25 @@
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<Player> uManager
+@model GameMatches
+<div class="game-container">
+    @{
+        var game = Model;
+        var matches = game.Matches.Where(m => m.Game.GameId == game.Game.GameId);
+        @if (!matches.Any())
+        {
+            <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
+            <h5 class="text-center">List of currently online admins will be displayed here soon</h5>
+        }
+        else
+        {
+            <div class="match-container">
+                <div class="row">
+                    @foreach (var match in matches)
+                    {
+                        await Html.RenderPartialAsync("_MatchPartial", match);
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>

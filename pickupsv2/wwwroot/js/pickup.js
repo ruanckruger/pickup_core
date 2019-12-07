@@ -18,31 +18,31 @@ $(document).ready(function () {
     var globalMessages = "";
     var matchMessages = "";
     game.on("RecieveGlobalMessage", function (userName, message) {
-        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+        var formattedMessage = `<p class="chat-message"><b>[` + userName + `]: </b> 
                             `+message+`
                         </p>`;
-            globalMessages += message;
+        globalMessages += formattedMessage;
         if ($("#global-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(globalMessages);
         $("#chat-toggle").addClass("new-message");
     });
     game.on("RecieveMatchMessage", function (userName, message) {
-        var message = `<p class="chat-message"><b>[` + userName + `]: </b> 
+        var formattedMessage = `<p class="chat-message"><b>[` + userName + `]: </b> 
                             `+ message + `
                         </p>`;
-        matchMessages += message;
+        matchMessages += formattedMessage;
         if ($("#match-chat").hasClass("current-chat-tab"))
             $("#chat-window").html(matchMessages);
         $("#chat-toggle").addClass("new-message");
     });
     $("#global-chat").click(function () {
         $("#match-chat").removeClass("current-chat-tab");
-        $(this).addClass("current-chat-tab")
+        $(this).addClass("current-chat-tab");
         $("#chat-window").html(globalMessages);
     });
     $("#match-chat").click(function () {
         $("#global-chat").removeClass("current-chat-tab");
-        $(this).addClass("current-chat-tab")
+        $(this).addClass("current-chat-tab");
         $("#chat-window").html(matchMessages);
     });
 
@@ -86,7 +86,7 @@ $(document).ready(function () {
             var readyClip = new Audio('../audio/ready.mp3');
             readyClip.play();
             gameReadyTimer = setTimeout(function () {
-                if (accepted == false) {
+                if (accepted === false) {
                     game.invoke("Leave");
                 }
                 $(modalId).fadeOut();
@@ -108,7 +108,7 @@ $(document).ready(function () {
     game.on("AdminFinalize", function (mId) {
         console.log("Yo, admin guy, you got dis");
         setTimeout(function () {$(".match-container[match-id='" + mId + "']")
-            if ($(".match-container[match-id='" + mId + "']").find(".accepted-match").length == 10) {
+            if ($(".match-container[match-id='" + mId + "']").find(".accepted-match").length === 10) {
                 game.invoke("FullAccept", mId);
             } else {
                 $.each($(".match-container[match-id='" + mId + "']").find(".declined-match"), function () {
@@ -134,7 +134,7 @@ $(document).ready(function () {
         game.invoke("Reconnect");
 
         $('body').on("click", "#create-new-match", function () {
-            game.invoke("CreateGame",$("#map-list").val());
+            game.invoke("CreateGame", $("#map-list").find("option:selected").attr('value'), $("#game-list").find("option:selected").attr('value'));
         });
 
         $('body').on("click", ".join-match", function () {            

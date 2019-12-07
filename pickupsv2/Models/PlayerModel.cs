@@ -2,22 +2,32 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace pickupsv2.Models
 {
-    public class Player
+    public class Player : IdentityUser
+    {
+        public byte[]  Avatar { get; set; }
+        public string DisplayName { get; set; }
+        public Guid? CurMatch{ get; set; }
+
+        [ForeignKey("GameId")]
+        public List<GameAdmin> AdminFor { get; set; }
+        [ForeignKey("steamid")]
+        public SteamPlayer SteamPlayer{ get; set; }
+    }
+    public class GameAdmin
     {
         [Key]
-        public Guid Id { get; set; }
-        public string steamId{ get; set; }
-        public string steamUsername{ get; set; }
-        public string name{ get; set; }
-        public string steaumUrl{ get; set; }
-        public string avatar{ get; set; }
-        public Guid? curMatch{ get; set; }
+        public Guid GameAdminId { get; set; }
+
+        public Game Game { get; set; }
+        public Player Player { get; set; }
     }
     public class SteamPlayer
     {
+        [Key]
         public string steamid { get; set; }
         public int communityvisibilitystate { get; set; }
         public int profilestate { get; set; }

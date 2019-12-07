@@ -14,25 +14,34 @@ namespace pickupsv2.Controllers
 {
     public class HomeController : Controller
     {
-        readonly PickupContext _context;
-        readonly UserManager<IdentityUser> umngr;
-        public HomeController(PickupContext context, UserManager<IdentityUser> _umngr)
+        readonly ApplicationDbContext _context;
+        readonly UserManager<Player> umngr;
+        public HomeController(ApplicationDbContext context, UserManager<Player> _umngr)
         {
             _context = context;
             umngr = _umngr;
         }
         public IActionResult Index()
         {
-            var matches = new List<Match>();
+            var home = new Home()
+            {
+                Matches = new List<Match>(),
+                Games = new List<Game>()
+            };
             using (var db = _context)
             {
+                foreach(var game in db.Games)
+                {
+                    game.Maps = db.Maps.Where(m => m.GameId == game.GameId).ToList();
+                    home.Games.Add(game);
+                }
                 foreach(var match in db.Matches)
                 {
                     match.Players = new List<Player>();
                     foreach(var player in db.Players)
                     {
                         Random rnd = new Random();
-                        if (player.curMatch == match.id)
+                        if (player.CurMatch == match.MatchId)
                         {
                             int team = rnd.Next(1, 100);
                             if (match.Players.Count < 10) {
@@ -40,10 +49,11 @@ namespace pickupsv2.Controllers
                             }
                         }
                     }
-                    matches.Add(match);
+                    home.Matches.Add(match);
                 }
+
             }
-            return View(matches);
+            return View(home);
         }
         
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

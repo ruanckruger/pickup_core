@@ -9,18 +9,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using pickupsv2.Models;
 
 namespace pickupsv2.Areas.Identity.Pages.Account
 {
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<Player> _signInManager;
+        private readonly UserManager<Player> _userManager;
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<Player> signInManager, ILogger<LoginModel> logger, UserManager<Player> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
             _logger = logger;
         }
 
@@ -37,8 +40,8 @@ namespace pickupsv2.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            [StringLength(100)]
+            public string UserName { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
@@ -73,7 +76,14 @@ namespace pickupsv2.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+                var user = await _userManager.FindByEmailAsync(Input.UserName);
+                var userName = Input.UserName;
+                if (user != null)
+                {
+                    userName = user.UserName;
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: true);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");

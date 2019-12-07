@@ -1,59 +1,40 @@
-﻿@model List<Match>
+﻿@model Home
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> uManager
+@inject UserManager<Player> uManager
 @{
     ViewData["Title"] = "ZA Pickups";
 }
-<h2>List of current Matches</h2>
 @if (User.Identity.IsAuthenticated)
 {
-    
     @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
     {
-        <div class="visible-panel" id="create-match-container">
-            <h3>You're an admin, how dank! You can do some extra shit</h3>
-            <div class="form-group">
-                <label for="map-list">Select Map</label>
-                <select class="form-control" id="map-list">
-                    <option value="Coastal"> Coastal </option>
-                    <option value="Liberation"> Liberation </option>
-                    <option value="Derailed"> Derailed </option>
-                    <option value="Manorhouse V2"> Manorhouse V2 </option>
-                    <option value="Savoia"> Savoia </option>
-                </select>
-            </div>
-            <button class="btn btn-success" id="create-new-match">
-                Start Pickup!
-            </button>
+    <div class="create-match-container container">
+        <h3>You're an admin, how dank! You can do some extra shit</h3>
+        <div class="form-group">
+            <label for="map-list">Select Game</label>
+            <select class="form-control" id="game-list">
+                <option value="">Select a Game</option>
+                @foreach (var game in Model.Games)
+                {
+                    <option value="@game.GameId">@game.Name</option>
+                }
+            </select>
         </div>
-    }
-    <div id="chat-container">
-        <div id="chat-tab">
-            <div class="current-chat-tab" id="global-chat">Global</div>
-            <div id="match-chat">Match</div>
-        </div>
-        <div id="chat-window"></div>
-        <div id="chat-input">
-            <input id="chat-message" type="text" placeholder="Your message" />
-            <button id="send-message">send</button>
-        </div>
-        <div id="chat-toggle">
-        </div>
+        <div id="map-list-container"></div>
+        <button class="btn btn-success" id="create-new-match">
+            Start Pickup!
+        </button>
     </div>
-    
+    }
 }
 
-@if (Model.Count == 0)
-{
-    <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
-    <h5 class="text-center">List of currently online admins will be displayed here soon</h5>
-}
-else
-{
-    <div id="matches-container">
-        @foreach (var match in Model)
-        {
-            await Html.RenderPartialAsync("_MatchPartial", match);
-        }
-    </div>
-}
+<div id="games-container">
+    @foreach (var game in Model.Games)
+    {
+        var gameMatches = new GameMatches();
+        gameMatches.Game = game;
+        gameMatches.Matches = Model.Matches.Where(m => m.Game.GameId == game.GameId).ToList();
+        await Html.RenderPartialAsync("_GamePartial", gameMatches);
+    }
+</div>
+
