@@ -6,6 +6,12 @@ a.navbar-brand {
   text-align: center;
   word-break: break-all;
 }
+.dropdown-container{
+    display: none;
+}
+.dropdown-container.open{
+    display: block;
+}
 .account-popup{
     display: none;
 }

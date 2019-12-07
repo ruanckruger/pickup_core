@@ -27,6 +27,9 @@
         }
     </div>
     <div class="curPlayers row text-center ">
-        
+        @foreach (var player in match.Players)
+        {
+            await Html.RenderPartialAsync("_PlayerPartial", player);
+        }
     </div>
 </div>

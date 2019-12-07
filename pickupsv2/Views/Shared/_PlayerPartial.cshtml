@@ -2,9 +2,7 @@
 @inject UserManager<Player> uManager
 @model Player
 @{var player = Model;}
-<div class="player-container
-    @if (player.Id == ViewData["matchAdmin"].ToString()){@("match-admin")}"
-     id="@player.Id">
+<div class="player-container @(player.Id == ViewData["matchAdmin"].ToString() ? "match-admin" : "")" id="@player.Id">
     <div class="player">
         <div class="player-link">
             <img class="account-image" src="@player.Avatar" />
@@ -13,14 +11,11 @@
     <div class="player-link">
         <h3 class="username">@Html.DisplayFor(modelItem => player.UserName)</h3>
     </div>
-    @if (User.Identity.IsAuthenticated)
+    @if (User.Identity.IsAuthenticated && uManager.GetUserId(User) == ViewData["matchAdmin"].ToString())
     {
-        if (uManager.GetUserId(User) == ViewData["matchAdmin"].ToString())
-        {
-            <div class='add-roles'>
-                <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
-                <a class='add-role kick' player-id="@player.Id">Kickify</a>
-            </div>
-        }
+        <div class='add-roles'>
+            <a class='add-role adminfy' player-id="@player.Id">Adminify</a>
+            <a class='add-role kick' player-id="@player.Id">Kickify</a>
+        </div>
     }
 </div>
