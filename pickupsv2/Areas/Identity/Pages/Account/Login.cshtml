@@ -6,28 +6,31 @@
 }
 
 <div class="quick-login">
-    <h1>@ViewData["Title"]</h1>
-    <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
-        <h4>Login to your account.</h4>
-        <hr />
-        <div asp-validation-summary="All" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Input.UserName">Username or Email</label>
-            <input asp-for="Input.UserName" class="form-control" />
-            <span asp-validation-for="Input.UserName" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.Password"></label>
-            <input asp-for="Input.Password" class="form-control" />
-            <span asp-validation-for="Input.Password" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <label asp-for="Input.RememberMe"></label>
-            <input asp-for="Input.RememberMe" class="form-control" />
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
+    <div class="container">
+        <h1>@ViewData["Title"]</h1>
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h4>Login to your account.</h4>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.UserName">Username or Email</label>
+                <input asp-for="Input.UserName" class="form-control" />
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.RememberMe">
+                    <span>Remember me <input asp-for="Input.RememberMe" class="form-control" /></span>  
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
     </div>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
