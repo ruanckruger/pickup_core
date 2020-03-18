@@ -37,7 +37,8 @@ namespace pickupsv2.Controllers
             if (game == null)
             {
                 return NotFound();
-            }            
+            }
+            game.Maps = await _context.Maps.Where(m => m.GameId == game.GameId).ToListAsync();
 
             return View(game);
         }
@@ -78,6 +79,8 @@ namespace pickupsv2.Controllers
             {
                 return NotFound();
             }
+            game.Maps = await _context.Maps.Where(m => m.GameId == game.GameId).ToListAsync();
+
             return View(game);
         }
 

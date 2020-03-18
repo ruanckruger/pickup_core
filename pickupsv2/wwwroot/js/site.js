@@ -5,3 +5,12 @@ $("#game-list").change(function () {
     console.log($(this).find("option:selected").attr('value'));
     $('#map-list-container').load("/Match/_MapListPartial?gameId=" + $(this).find("option:selected").attr('value'));
 });
+
+$(".admin-features").click(function () {
+    let dropDownContainer = $('.dropdown-container');
+    if (dropDownContainer.hasClass('open')) {
+        dropDownContainer.removeClass('open');
+    } else {
+        dropDownContainer.addClass('open');
+    }
+});

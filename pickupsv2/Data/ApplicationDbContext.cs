@@ -17,5 +17,6 @@ namespace pickupsv2.Data
         public DbSet<Match> Matches { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<Map> Maps { get; set; }
+        public DbSet<pickupsv2.Models.SteamPlayer> SteamPlayer { get; set; }
     }
 }

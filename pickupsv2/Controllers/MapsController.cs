@@ -46,21 +46,23 @@ namespace pickupsv2.Controllers
             return View(map);
         }
 
-        // GET: Maps/Create
-        public IActionResult Create()
+        // GET: Maps/Create/GameId
+        public async Task<IActionResult> Create(Guid? gameId)
         {
-            var games = _context.Games.ToList();
-            var selectList = new List<SelectListItem>();
-            foreach (var game in games)
+            if (gameId == null)
             {
-                selectList.Add(new SelectListItem()
-                {
-                    Value = game.GameId.ToString(),
-                    Text = game.Name
-                });
+                return NotFound();
             }
-            ViewBag.options = selectList;
-            return View();
+            var game = await _context.Games.FirstOrDefaultAsync(g => g.GameId == gameId);
+            if(game == null)
+            {
+                return NotFound();
+            }
+            var map = new Map()
+            {
+                GameId = gameId.Value
+            };
+            return View(map);
         }
 
         // POST: Maps/Create
