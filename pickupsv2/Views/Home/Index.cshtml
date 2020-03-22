@@ -29,14 +29,12 @@
 }
 
     <div id="games-container">
-        <div class="container">
-            @foreach (var game in Model.Games)
-            {
-                var gameMatches = new GameMatches();
-                gameMatches.Game = game;
-                gameMatches.Matches = Model.Matches.Where(m => m.Game.GameId == game.GameId).ToList();
-                await Html.RenderPartialAsync("_GamePartial", gameMatches);
-            }
-        </div>
+        @foreach (var game in Model.Games)
+        {
+            var gameMatches = new GameMatches();
+            gameMatches.Game = game;
+            gameMatches.Matches = Model.Matches.Where(m => m.Game.GameId == game.GameId).ToList();
+            await Html.RenderPartialAsync("_GamePartial", gameMatches);
+        }
     </div>
 

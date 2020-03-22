@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -24,9 +25,17 @@ namespace pickupsv2.Models
         public Guid GameId { get; set; }
         public string Name { get; set; }
         public string Rules { get; set; }
+        public string imageExtension { get; set; }
         public List<Map> Maps { get; set; }
         [ForeignKey("Id")]
         public List<GameAdmin> Admins { get; set; }
+    }
+
+    [NotMapped]
+    public class GameCreate
+    {
+        public Game Game { get; set; }
+        public IFormFile Image { get; set; }
     }
 
     public class Map

@@ -17,6 +17,7 @@ using pickupsv2.Hubs;
 using pickupsv2.Models;
 using AspNet.Security.OpenId.Steam;
 using Microsoft.AspNetCore.HttpOverrides;
+using pickupsv2.Helpers;
 
 namespace pickupsv2
 {
@@ -63,7 +64,7 @@ namespace pickupsv2
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider, IConfiguration config)
         {
             if (env.IsDevelopment())
             {
@@ -96,6 +97,8 @@ namespace pickupsv2
             {
                 routes.MapHub<PickupHub>("/PickupHub");
             });
+
+            serviceProvider.SetupWriteHelperService(env,config);
         }
     }
 }

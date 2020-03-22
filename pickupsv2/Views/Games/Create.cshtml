@@ -1,4 +1,4 @@
-﻿@model pickupsv2.Models.Game
+﻿@model pickupsv2.Models.GameCreate
 
 @{
     ViewData["Title"] = "Create";
@@ -9,17 +9,22 @@
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Create">
+            <form asp-action="Create" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Game.Name" class="control-label"></label>
+                    <input asp-for="Game.Name" class="form-control" />
+                    <span asp-validation-for="Game.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Rules" class="control-label"></label>
-                    <textarea rows="5" asp-for="Rules" class="form-control"></textarea>
-                    <span asp-validation-for="Rules" class="text-danger"></span>
+                    <label asp-for="Game.Rules" class="control-label"></label>
+                    <textarea rows="5" asp-for="Game.Rules" class="form-control"></textarea>
+                    <span asp-validation-for="Game.Rules" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Image">Upload Image</label>
+                    <input asp-for="Image" type="file">
+                    <span asp-validation-for="Image"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />

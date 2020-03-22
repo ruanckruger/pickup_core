@@ -1,25 +1,33 @@
 @using Microsoft.AspNetCore.Identity
 @inject UserManager<Player> uManager
 @model GameMatches
-<div class="game-container">
-    @{
-        var game = Model;
-        var matches = game.Matches.Where(m => m.Game.GameId == game.Game.GameId);
-        @if (!matches.Any())
-        {
-            <h1 class="text-center">No matches yet! Ask an admin to start one!</h1>
-            <h5 class="text-center">List of currently online admins will be displayed here soon</h5>
-        }
-        else
-        {
-            <div class="match-container">
-                <div class="row">
-                    @foreach (var match in matches)
-                    {
-                        await Html.RenderPartialAsync("_MatchPartial", match);
-                    }
+@{
+    var game = Model;
+}
+<div class="game-container" style="background-image: url('/img/games/@(game.Game.GameId.ToString()).@(game.Game.imageExtension)">
+    <div class="container">
+        <h1 class="game-header">@(game.Game.Name)</h1>
+        @{
+            var matches = game.Matches.Where(m => m.Game.GameId == game.Game.GameId);
+            @if (!matches.Any())
+            {
+                
+                <div class="no-game">
+                    <h2>No matches yet! Ask an admin to start one!</h2>
+                    <h5>List of currently online admins will be displayed here soon</h5>
                 </div>
-            </div>
+            }
+            else
+            {
+                <div class="match-container">
+                    <div class="row">
+                        @foreach (var match in matches)
+                        {
+                            await Html.RenderPartialAsync("_MatchPartial", match);
+                        }
+                    </div>
+                </div>
+            }
         }
-    }
+    </div>
 </div>

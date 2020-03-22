@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using pickupsv2.Data;
+using pickupsv2.Helpers;
 using pickupsv2.Models;
 
 namespace pickupsv2.Controllers
@@ -54,17 +53,22 @@ namespace pickupsv2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("GameId,Name,Rules")] Game game)
+        public async Task<IActionResult> Create(GameCreate gameCreate)
         {
             if (ModelState.IsValid)
             {
-                game.GameId = Guid.NewGuid();
-                _context.Add(game);
-                await _context.SaveChangesAsync();
+                gameCreate.Game.GameId = Guid.NewGuid();
+                if (gameCreate.Image.Length > 0)
+                {
+                    gameCreate.Game.imageExtension = await WriteHelper.UploadImage(gameCreate.Image, "games", gameCreate.Game.GameId.ToString());
+                    var newGame = _context.Add(gameCreate.Game);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(game);
-        }
+            return View(gameCreate);
+        } 
 
         // GET: Games/Edit/5
         public async Task<IActionResult> Edit(Guid? id)

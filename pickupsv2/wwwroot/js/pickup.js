@@ -52,7 +52,6 @@ $(document).ready(function () {
             $(".match-container[match-id='" + matchId + "']").find(".curPlayers").append(data);
         });
         $(".match-container[match-id='" + matchId + "']").find(".match-player-count").text(newCount);
-        console.log(matchId + " joined " + userId);
     });
     game.on("UserLeft", function (matchId, userId, newCount) {
         $("#" + userId).remove();
@@ -75,7 +74,6 @@ $(document).ready(function () {
     var gameReadyTimer;
     game.on("AcceptGame", function (matchId) {
         accepted = false;
-        console.log("Accept Match ", matchId);
         $.get("/Match/MatchReady?matchId=" + matchId, function (data) {
             $("body").prepend(data);
             $("#accept-match").attr("match-id", matchId);
@@ -96,8 +94,6 @@ $(document).ready(function () {
     });
 
     game.on("AcceptStatus", function (uId, hasAccepted) {
-        console.log(uId + " accepted? " + hasAccepted);
-
         if (hasAccepted) {
             $("#" + uId).addClass("accepted-match");
         } else {
