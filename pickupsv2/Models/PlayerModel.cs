@@ -8,15 +8,27 @@ namespace pickupsv2.Models
 {
     public class Player : IdentityUser
     {
-        public byte[]  Avatar { get; set; }
+        public byte[] Avatar { get; set; }
         public string DisplayName { get; set; }
-        public Guid? CurMatch{ get; set; }
+        public Guid? CurMatch { get; set; }
 
         [ForeignKey("GameId")]
         public List<GameAdmin> AdminFor { get; set; }
         [ForeignKey("steamid")]
-        public SteamPlayer SteamPlayer{ get; set; }
+        public SteamPlayer SteamPlayer { get; set; }
+
     }
+
+    [NotMapped]
+    public class PlayerEdit
+    {
+        public Player Player { get; set; }
+        public List<Game> Games { get; set; }
+        public bool ManageUsers { get; set; }
+        public bool ManageGames { get; set; }
+        public bool ManageMatches { get; set; }
+    }
+
     public class GameAdmin
     {
         [Key]

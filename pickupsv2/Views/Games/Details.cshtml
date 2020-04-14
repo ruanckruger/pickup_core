@@ -31,9 +31,6 @@
                     <th>
                         Name
                     </th>
-                    <th>
-                        Image
-                    </th>
                     <th></th>
                 </tr>
             </thead>
@@ -43,9 +40,6 @@
                     <tr>
                         <td>
                             @Html.DisplayFor(modelItem => map.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => map.Image)
                         </td>
                         <td>
                             <a asp-action="Edit" asp-route-id="@map.MapId">Edit</a> |

@@ -9,6 +9,7 @@ using pickupsv2.Data;
 using System.Net.Http;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace pickupsv2.Controllers
 {
@@ -35,7 +36,7 @@ namespace pickupsv2.Controllers
                     game.Maps = db.Maps.Where(m => m.GameId == game.GameId).ToList();
                     home.Games.Add(game);
                 }
-                foreach(var match in db.Matches)
+                foreach(var match in db.Matches.Include(m => m.Map))
                 {
                     match.Players = new List<Player>();
                     foreach(var player in db.Players)

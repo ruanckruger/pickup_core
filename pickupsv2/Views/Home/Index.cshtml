@@ -6,7 +6,7 @@
 }
 @if (User.Identity.IsAuthenticated)
 {
-    @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+    @if (User.IsInRole("MatchAdmin") || User.IsInRole("GameAdmin"))
     {
     <div class="create-match-container container">
         <h3>You're an admin, how dank! You can do some extra shit</h3>

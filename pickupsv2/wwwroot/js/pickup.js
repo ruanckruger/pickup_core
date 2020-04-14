@@ -62,9 +62,10 @@ $(document).ready(function () {
             $(".match-container[match-id='" + matchId + "']").replaceWith(data);
         });
     });
-    game.on("GameCreated", function (matchId) {
+    game.on("GameCreated", function (matchId, gameId) {
         $.get('/Match/MatchInfo?matchId=' + matchId, function (data, status) {
-            $("#matches-container").append(data);
+            console.log('GameCreated');
+            $(".game-container[game-id='" + gameId + "']").append(data);
         });
     });
     game.on("GameEnded", function (matchId) {
@@ -150,17 +151,20 @@ $(document).ready(function () {
 
         $("body").on("click", ".end-match", function (e) {
             e.preventDefault();
-            console.log("clicked", $(this).closest(".match-container").attr("match-id"));
             game.invoke("EndGame", $(this).closest(".match-container").attr("match-id"));
+            window.location.replace('/');
         });
+
         $("body").on("click", ".adminfy", function (e) {
             e.preventDefault();
             game.invoke("Adminfy", $(this).closest(".match-container").attr("match-id"), $(this).attr("player-id"));
         });
+
         $("body").on("click", ".kick", function (e) {
             e.preventDefault();
             game.invoke("Kick", $(this).closest(".match-container").attr("match-id"), $(this).attr("player-id"));
         });
+
         $("body").on("click", "#accept-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();
@@ -168,6 +172,7 @@ $(document).ready(function () {
             game.invoke("AcceptMatch", true);
             accepted = true;
         });
+
         $("body").on("click", "#decline-match", function (e) {
             e.preventDefault();
             $(modalId).fadeOut();

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using pickupsv2.Data;
 
 namespace pickupsv2.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200408132433_AddMapImage")]
+    partial class AddMapImage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,11 +196,11 @@ namespace pickupsv2.Migrations
                     b.Property<Guid>("GameId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ImageExtension");
-
                     b.Property<string>("Name");
 
                     b.Property<string>("Rules");
+
+                    b.Property<string>("imageExtension");
 
                     b.HasKey("GameId");
 
@@ -252,15 +254,13 @@ namespace pickupsv2.Migrations
 
                     b.Property<Guid?>("Host");
 
-                    b.Property<Guid?>("MapId");
+                    b.Property<string>("Map");
 
                     b.Property<bool>("NeedHost");
 
                     b.HasKey("MatchId");
 
                     b.HasIndex("GameId");
-
-                    b.HasIndex("MapId");
 
                     b.ToTable("Matches");
                 });
@@ -395,10 +395,6 @@ namespace pickupsv2.Migrations
                     b.HasOne("pickupsv2.Models.Game", "Game")
                         .WithMany()
                         .HasForeignKey("GameId");
-
-                    b.HasOne("pickupsv2.Models.Map", "Map")
-                        .WithMany()
-                        .HasForeignKey("MapId");
                 });
 
             modelBuilder.Entity("pickupsv2.Models.Player", b =>

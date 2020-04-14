@@ -60,7 +60,7 @@ namespace pickupsv2.Controllers
                 gameCreate.Game.GameId = Guid.NewGuid();
                 if (gameCreate.Image.Length > 0)
                 {
-                    gameCreate.Game.imageExtension = await WriteHelper.UploadImage(gameCreate.Image, "games", gameCreate.Game.GameId.ToString());
+                    gameCreate.Game.ImageExtension = await WriteHelper.UploadImage(gameCreate.Image, "games", gameCreate.Game.GameId.ToString());
                     var newGame = _context.Add(gameCreate.Game);
                     await _context.SaveChangesAsync();
                 }

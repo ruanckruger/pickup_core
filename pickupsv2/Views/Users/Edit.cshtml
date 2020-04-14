@@ -1,37 +1,60 @@
-﻿@model pickupsv2.Models.Player
+﻿@model pickupsv2.Models.PlayerEdit
 
 @{
     ViewData["Title"] = "Edit";
 }
-
-<h1>Edit</h1>
-
-<h4>Player</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="DisplayName" class="control-label"></label>
-                <input asp-for="DisplayName" class="form-control" />
-                <span asp-validation-for="DisplayName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="AdminFor" class="control-label"></label>
-                <select asp-for="AdminFor" class="form-control" asp-items="ViewBag.options"></select>
-                <span asp-validation-for="AdminFor" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container">
+    <h1>Edit</h1>
+    <h4>@Model.Player.DisplayName</h4>
+    <hr />
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Player.Id" />
+                <div class="form-group">
+                    <div class="input-group">
+                        <input class="form-check-input" asp-for="ManageUsers" />
+                        <label asp-for="ManageUsers" class="form-check-label">
+                            Manage Users
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <input class="form-check-input" asp-for="ManageGames" />
+                        <label asp-for="ManageGames" class="form-check-label">
+                            Manage Games
+                        </label>
+                    </div>
+                    <div class="input-group">
+                        <input class="form-check-input" asp-for="ManageMatches" />
+                        <label asp-for="ManageMatches" class="form-check-label">
+                            Manage Matches
+                        </label>
+                    </div>
+                </div>
+                @if (Model.ManageMatches)
+                {
+                    <div class="form-group">
+                        <h3>Admin for the following games:</h3>
+                        @foreach (Game game in Model.Games)
+                        {
+                            <label class="control-label">
+                                @game.Name
+                                <input class="form-control" checked="@game.Admins.Any(a => a.Player == Model.Player)" />
+                            </label>
+                        }
+                    </div>
+                }
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
 </div>
 
 @section Scripts {

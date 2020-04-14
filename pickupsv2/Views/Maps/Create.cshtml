@@ -1,4 +1,4 @@
-﻿@model pickupsv2.Models.Map
+﻿@model pickupsv2.Models.MapCreate
 
 @{
     ViewData["Title"] = "Create";
@@ -10,18 +10,18 @@
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Create">
+            <form asp-action="Create" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="GameId" />
+                <input type="hidden" asp-for="Map.GameId" />
                 <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <label asp-for="Map.Name" class="control-label"></label>
+                    <input asp-for="Map.Name" class="form-control" />
+                    <span asp-validation-for="Map.Name" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Image" class="control-label"></label>
-                    <input asp-for="Image" class="form-control" />
-                    <span asp-validation-for="Image" class="text-danger"></span>
+                    <label asp-for="Image">Upload Image</label>
+                    <input asp-for="Image" type="file">
+                    <span asp-validation-for="Image"></span>
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
@@ -30,7 +30,7 @@
         </div>
     </div>
     <div>
-        <a asp-controller="Games" asp-action="Edit" asp-route-id="@Model.GameId">Back to List</a>
+        <a asp-controller="Games" asp-action="Edit" asp-route-id="@Model.Map.GameId">Back to List</a>
     </div>
 </div>
 @section Scripts {

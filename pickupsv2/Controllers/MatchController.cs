@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using pickupsv2.Data;
 using pickupsv2.Models;
 
@@ -10,7 +11,7 @@ namespace pickupsv2.Controllers
 {
     public class MatchController : Controller
     {
-        ApplicationDbContext context;
+        readonly ApplicationDbContext context;
         public MatchController(ApplicationDbContext _context)
         {
             context = _context;
@@ -24,7 +25,7 @@ namespace pickupsv2.Controllers
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
+                var match = db.Matches.Include(m => m.Map).Where(m => m.MatchId == matchId).FirstOrDefault();
                 var curPlayers = new List<Player>();
                 foreach (var player in db.Players.Where(n => n.CurMatch == match.MatchId))
                 {
@@ -58,7 +59,7 @@ namespace pickupsv2.Controllers
         {
             using (var db = context)
             {
-                var match = db.Matches.FirstOrDefault(m => m.MatchId == matchId);
+                var match = db.Matches.Include(m => m.Map).FirstOrDefault(m => m.MatchId == matchId);
                 var players = db.Players.Where(p => p.CurMatch == matchId);
                 match.Players = players.ToList();
                 return View(match);

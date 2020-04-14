@@ -11,7 +11,8 @@ namespace pickupsv2.Models
         [Key]
         public Guid MatchId { get; set; }
         public Game Game { get; set; }
-        public string Map { get; set; }
+        [ForeignKey("MapId")]
+        public Map Map { get; set; }
         [ForeignKey("CurMatch")]
         public List<Player> Players { get; set; }
         public Guid Admin { get; set; }
@@ -25,7 +26,7 @@ namespace pickupsv2.Models
         public Guid GameId { get; set; }
         public string Name { get; set; }
         public string Rules { get; set; }
-        public string imageExtension { get; set; }
+        public string ImageExtension { get; set; }
         public List<Map> Maps { get; set; }
         [ForeignKey("Id")]
         public List<GameAdmin> Admins { get; set; }
@@ -45,13 +46,14 @@ namespace pickupsv2.Models
         [ForeignKey("GameId")]
         public Guid GameId { get; set; }
         public string Name { get; set; }
-        public string Image { get; set; }
+        public string ImageExtension { get; set; }
     }
 
-    public class MapExtraModel{
-        public List<Game> Games { get; set; }
-        public string MapName { get; set; }
-        public string Image { get; set; }
+    [NotMapped]
+    public class MapCreate
+    {
+        public Map Map { get; set; }
+        public IFormFile Image { get; set; }
     }
 
     public class GameMatches

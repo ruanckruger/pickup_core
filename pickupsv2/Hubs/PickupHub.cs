@@ -78,14 +78,14 @@ namespace pickupsv2.Hubs
             {
                 Match match = new Match();
                 
-                match.Map = db.Maps.FirstOrDefault(m => m.MapId == Guid.Parse(mapId)).Name;
+                match.Map = db.Maps.FirstOrDefault(m => m.MapId == Guid.Parse(mapId));
                 match.Game = db.Games.FirstOrDefault(g => g.GameId == Guid.Parse(gameId));
                 match.Admin = Guid.Parse(uManager.GetUserId(Context.User));
                 
                 db.Matches.Add(match);
                 await db.SaveChangesAsync();
 
-                await Clients.All.SendAsync("GameCreated",match.MatchId);
+                await Clients.All.SendAsync("GameCreated",match.MatchId, gameId);
             }
         }
         public async Task EndGame(Guid matchId)

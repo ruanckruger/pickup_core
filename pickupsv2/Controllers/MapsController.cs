@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using pickupsv2.Data;
+using pickupsv2.Helpers;
 using pickupsv2.Models;
 
 namespace pickupsv2.Controllers
@@ -36,8 +37,7 @@ namespace pickupsv2.Controllers
                 return NotFound();
             }
 
-            var map = await _context.Maps
-                .FirstOrDefaultAsync(m => m.MapId == id);
+            var map = await _context.Maps.FirstOrDefaultAsync(m => m.MapId == id);
             if (map == null)
             {
                 return NotFound();
@@ -62,7 +62,11 @@ namespace pickupsv2.Controllers
             {
                 GameId = gameId.Value
             };
-            return View(map);
+            MapCreate mapCreate = new MapCreate()
+            {
+                Map = map
+            };
+            return View(mapCreate);
         }
 
         // POST: Maps/Create
@@ -70,16 +74,21 @@ namespace pickupsv2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("MapId,GameId,Name,Image")] Map map)
+        public async Task<IActionResult> Create(MapCreate mapCreate)
         {   
             if (ModelState.IsValid)
             {
-                map.MapId = Guid.NewGuid();
-                _context.Add(map);
-                await _context.SaveChangesAsync();
+                mapCreate.Map.MapId = Guid.NewGuid();
+                if (mapCreate.Image.Length > 0)
+                {
+                    mapCreate.Map.ImageExtension = await WriteHelper.UploadImage(mapCreate.Image, "maps", mapCreate.Map.MapId.ToString());
+                    var newMap = _context.Add(mapCreate.Map);
+                    await _context.SaveChangesAsync();
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(map);
+            return View(mapCreate);
         }
 
         // GET: Maps/Edit/5
@@ -88,24 +97,14 @@ namespace pickupsv2.Controllers
             if (id == null)
             {
                 return NotFound();
-            }            
-            var map = await _context.Maps.FindAsync(id);
-            if (map == null)
+            }
+            var mapCreate = new MapCreate();
+            mapCreate.Map = await _context.Maps.FindAsync(id);
+            if (mapCreate.Map == null)
             {
                 return NotFound();
             }
-            var games = _context.Games.ToList();
-            var selectList = new List<SelectListItem>();
-            foreach (var game in games)
-            {
-                selectList.Add(new SelectListItem()
-                {
-                    Value = game.GameId.ToString(),
-                    Text = game.Name
-                });
-            }
-            ViewBag.options = selectList;
-            return View(map);
+            return View(mapCreate);
         }
 
         // POST: Maps/Edit/5
@@ -113,23 +112,23 @@ namespace pickupsv2.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("MapId,GameId,Name,Image")] Map map)
+        public async Task<IActionResult> Edit(MapCreate mapCreate)
         {
-            if (id != map.MapId)
-            {
-                return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(map);
-                    await _context.SaveChangesAsync();
+                    if (mapCreate.Image.Length > 0)
+                    {
+                        mapCreate.Map.ImageExtension = await WriteHelper.UploadImage(mapCreate.Image, "maps", mapCreate.Map.MapId.ToString());
+                        var newMap = _context.Update(mapCreate.Map);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!MapExists(map.MapId))
+                    if (!MapExists(mapCreate.Map.MapId))
                     {
                         return NotFound();
                     }
@@ -140,7 +139,7 @@ namespace pickupsv2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(map);
+            return View(mapCreate);
         }
 
         // GET: Maps/Delete/5

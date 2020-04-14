@@ -4,7 +4,7 @@
 @{
     var game = Model;
 }
-<div class="game-container" style="background-image: url('/img/games/@(game.Game.GameId.ToString()).@(game.Game.imageExtension)">
+<div class="game-container" game-id="@game.Game.GameId.ToString()" style="background-image: url('/img/games/@(game.Game.GameId.ToString()).@(game.Game.ImageExtension)">
     <div class="container">
         <h1 class="game-header">@(game.Game.Name)</h1>
         @{
